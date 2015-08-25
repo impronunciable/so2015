@@ -19,7 +19,7 @@ void TaskAlterno(int pid, vector<int> params) { // params: ms_pid, ms_io, ms_pid
 	}
 }
 
-void taskConsola(int pid, vector<int> params) { // params: n, bmin, bmax
+void TaskConsola(int pid, vector<int> params) { // params: n, bmin, bmax
 	for(int i = 0; i < params[0]; ++i) {	
 		int time = params[1] + (rand() % ((params[2] + 1) - params[1]));
 		uso_IO(pid, time);
