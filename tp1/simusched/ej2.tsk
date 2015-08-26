@@ -1,0 +1,6 @@
+# 100 ciclos no bloqueantes
+TaskCPU 100
+# tarea1 de 20 llamados bloqueantes
+TaskConsola 20 2 4
+# tarea2 de 25 llamados bloqueantes
+TaskConsola 25 2 4
