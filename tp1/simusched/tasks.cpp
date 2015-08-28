@@ -1,5 +1,6 @@
 #include "tasks.h"
 #include <stdlib.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -20,15 +21,32 @@ void TaskAlterno(int pid, vector<int> params) { // params: ms_pid, ms_io, ms_pid
 }
 
 void TaskConsola(int pid, vector<int> params) { // params: n, bmin, bmax
-	for(int i = 0; i < params[0]; ++i) {	
-		int time = params[1] + (rand() % ((params[2] + 1) - params[1]));
-		uso_IO(pid, time);
+	int tiempo;
+	for(int i = 0; i < params[0]; ++i) {
+		tiempo = params[1] + (rand() % ((params[2] + 1) - params[1]));
+		uso_IO(pid, tiempo);
 	}
-	
+
 }
 
 void TaskBatch(int pid, vector<int> params) { // params: total_cpu, cant_bloqueos
-	vector<bool> ticks = vector<bool>(params[0]);
+	// Tiempo discretizado
+	auto ticks = vector<bool>(params[0]);
+	// vector para obtener posiciones aleatorias
+	auto posTiempo = vector<int>(params[0]);
+	//inicializamos ambos vectores
+	for (int i = 0; i < params[0]; ++i){
+		ticks[i] = false;
+		posTiempo[i] = i;
+	}
+
+	//desordena el vector en tiempo lineal
+	random_shuffle(posTiempo.begin(), posTiempo.end());
+	for(int i = 0; i < params[1]; ++i){
+		ticks[posTiempo[i]] = true;
+	}
+
+	/*
 	for(int i = 0; i < params[1]; ++i) {
 		int j = rand() % params[0];
 		bool tick = ticks[j];
@@ -38,14 +56,17 @@ void TaskBatch(int pid, vector<int> params) { // params: total_cpu, cant_bloqueo
 			ticks[j] = true;
 		}
 	}
+	*/
+
+	//Para cada instante de tiempo, usamos cpu o bloquemos
 	for(int i = 0; i < params[0]; ++i) {
 		if(ticks[i]) {
 			uso_IO(pid, 1);
 		} else {
 			uso_CPU(pid, 1);
-		}		
+		}
 	}
-	
+
 }
 
 void tasks_init(void) {

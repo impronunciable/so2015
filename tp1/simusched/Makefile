@@ -1,5 +1,5 @@
 export LC_ALL=C
-CXXFLAGS= -Wall -pedantic -g -ggdb
+CXXFLAGS= -Wall -pedantic -g -ggdb -std=c++11
 LDFLAGS= -lpthread
 
 OBJS=main.o simu.o basesched.o basetask.o tasks.o sched_rr.o sched_fcfs.o sched_rr2.o sched_no_mistery.o
@@ -8,7 +8,7 @@ MAIN=simusched
 .PHONY: all clean new
 all: $(MAIN)
 
-$(MAIN): $(OBJS) sched_mistery.o 
+$(MAIN): $(OBJS) sched_mistery.o
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 %.o: %.cpp %.h basesched.h
@@ -24,4 +24,3 @@ clean:
 	rm -f $(OBJS) $(MAIN)
 
 new: clean all
-
