@@ -23,4 +23,21 @@ tasks.o: tasks.cpp tasks.h basetask.h
 clean:
 	rm -f $(OBJS) $(MAIN)
 
+ejercicio1:
+    
+ejercicio2:
+
+ejercicio3:
+
+ejercicio4:
+	./simusched ej4.tsk 1 2 0 SchedRR 1 3 | ./graphsched.py > ej4-1core.png
+	./simusched ej4.tsk 2 1 0 SchedRR 2 2 | ./graphsched.py > ej4-2core.png
+ejercicio5:
+
+ejercicio6:
+
+ejercicio7:
+
+ejercicio8:
+
 new: clean all
