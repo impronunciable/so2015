@@ -2,7 +2,6 @@
 #define __SCHED_NOMIS__
 
 #include <vector>
-#include <queue>
 #include "basesched.h"
 
 class SchedNoMistery : public SchedBase {
@@ -11,6 +10,12 @@ class SchedNoMistery : public SchedBase {
     virtual void load(int pid);
     virtual void unblock(int pid);
     virtual int tick(int cpu, const enum Motivo m);  
+
+  private:
+	std::vector<int> tareas;
+	int quantum; // tiempo restante del cpu
+	int maxQuantum;	// duración total del quantum
+
 };
 
 #endif
