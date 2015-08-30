@@ -47,6 +47,9 @@ ejercicio6:
 
 ejercicio7:
 
+	./simusched ej7-1.tsk 1 0 0 SchedMistery 1 10 | ./graphsched.py > ej7/misterio-1.png
+	./simusched ej7-1.tsk 1 0 0 SchedMistery 0 | ./graphsched.py > ej7/misterio-2.png
+
 ejercicio8:
 
 new: clean all
