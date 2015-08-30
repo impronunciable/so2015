@@ -18,7 +18,6 @@ class SchedRR : public SchedBase {
 		int coreNum; // cantidad de cores
 		std::vector<int> quantum; // tiempo restante por cada cpu
 		int maxQuantum;	// duración total del quantum
-		std::vector<int> runningProcs; // pid del proceso actual corriendo para cada CPU
 };
 
 #endif
