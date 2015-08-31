@@ -1,21 +1,34 @@
 #include <vector>
-#include <queue>
+#include <map>
+#include <iostream>
 #include "sched_no_mistery.h"
 #include "basesched.h"
 
 using namespace std;
 
 SchedNoMistery::SchedNoMistery(vector<int> argn) {  
-	maxQuantum = argn[0];
-	quantum = maxQuantum;
+	maxQuantums = argn;
+	maxQuantums.insert(maxQuantums.begin(), 1); // Todo corre 1 vez al principio
+	quantum = maxQuantums[0];
 }
 
 void SchedNoMistery::load(int pid) {
 	tareas.push_back(pid);
+	corridas.insert(make_pair(pid, 0));
 }
 
 void SchedNoMistery::unblock(int pid) {
-	tareas.push_back(pid);
+	tareas.insert(tareas.begin(), pid);
+}
+
+void SchedNoMistery::setQuantum(int pid) {
+	uint procCorridas = corridas[pid];
+	if(procCorridas < maxQuantums.size()) {
+		quantum = maxQuantums[procCorridas];
+	} else {
+		quantum = maxQuantums[maxQuantums.size() - 1];
+	}
+	corridas[pid]++;
 }
 
 int SchedNoMistery::tick(int cpu, const enum Motivo m) {  
@@ -33,7 +46,7 @@ int SchedNoMistery::tick(int cpu, const enum Motivo m) {
 			} else {
 				int buffer = tareas.front();
 				tareas.erase(tareas.begin());
-				quantum = maxQuantum;
+				setQuantum(buffer);
 				return buffer;
 			}
 
@@ -49,8 +62,8 @@ int SchedNoMistery::tick(int cpu, const enum Motivo m) {
 				sig = tareas[0];
 				//cout << sig << "siguiente"<<endl;
 				tareas.erase(tareas.begin());
+				setQuantum(sig);
 				// Finalmente, reseteamos el quantum
-				quantum = maxQuantum;
 			} else {
 				quantum -= 1;
 			}
@@ -63,10 +76,11 @@ int SchedNoMistery::tick(int cpu, const enum Motivo m) {
 			return IDLE_TASK;
 		} else {
 			// Reseteamos el quantum
-			quantum = maxQuantum;
 			// El siguiente es el primero en la fila
 			int sig = tareas[0];
 			tareas.erase(tareas.begin());
+			setQuantum(sig);
+
 			return sig;
 		}
 	break;
@@ -77,10 +91,10 @@ int SchedNoMistery::tick(int cpu, const enum Motivo m) {
 		if (tareas.empty()){
 			return IDLE_TASK;
 		} else {
-			// Reseteamos el quantum
-			quantum = maxQuantum;
 			// El siguiente es el primero en la fila
 			int sig = tareas[0];
+			setQuantum(sig);
+
 			//cout << "Sacamos a " << sig << endl;
 			tareas.erase(tareas.begin());
 			return sig;

@@ -14,8 +14,9 @@ class SchedNoMistery : public SchedBase {
   private:
 	std::vector<int> tareas;
 	int quantum; // tiempo restante del cpu
-	int maxQuantum;	// duración total del quantum
-
+	std::vector<int> maxQuantums;	// duración total del quantum
+	std::map<int, int> corridas; // cantidad de ejecuciones de una tarea
+	void setQuantum(int pid);
 };
 
 #endif
