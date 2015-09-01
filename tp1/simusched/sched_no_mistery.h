@@ -10,6 +10,7 @@ class SchedNoMistery : public SchedBase {
     virtual void load(int pid);
     virtual void unblock(int pid);
     virtual int tick(int cpu, const enum Motivo m);  
+    virtual int nextTask();  
 
   private:
 	std::vector<int> tareas;
