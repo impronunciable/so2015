@@ -17,7 +17,7 @@ void SchedNoMistery::load(int pid) {
 }
 
 void SchedNoMistery::unblock(int pid) {
-	tareas.insert(tareas.begin(), pid);
+	desbloqueadas.push_back(pid);
 }
 
 void SchedNoMistery::setQuantum(int pid) {
@@ -31,10 +31,16 @@ void SchedNoMistery::setQuantum(int pid) {
 }
 
 int SchedNoMistery::nextTask() {
-	if(tareas.empty()) return IDLE_TASK;
+	int pid;
+	if(desbloqueadas.empty() && tareas.empty()) return IDLE_TASK;
 
-	int pid = tareas.front();
-	tareas.erase(tareas.begin());
+	if(!desbloqueadas.empty()) {
+		pid = desbloqueadas.front();
+		desbloqueadas.erase(desbloqueadas.begin());
+	} else {
+		pid = tareas.front();
+		tareas.erase(tareas.begin());
+	}
 	setQuantum(pid);
 	return pid;
 }
