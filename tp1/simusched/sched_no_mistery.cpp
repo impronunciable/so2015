@@ -8,7 +8,6 @@ using namespace std;
 
 SchedNoMistery::SchedNoMistery(vector<int> argn) {  
 	maxQuantums = argn;
-	maxQuantums.insert(maxQuantums.begin(), 1); // Todo corre 1 vez al principio
 	quantum = maxQuantums[0];
 }
 
@@ -51,6 +50,7 @@ int SchedNoMistery::tick(int cpu, const enum Motivo m) {
 			}
 
 		} else {
+			quantum -= 1;
 
 			// Si se le acaba e:l quantum, le toca al próximo
 			if (quantum <= 0){
@@ -64,8 +64,6 @@ int SchedNoMistery::tick(int cpu, const enum Motivo m) {
 				tareas.erase(tareas.begin());
 				setQuantum(sig);
 				// Finalmente, reseteamos el quantum
-			} else {
-				quantum -= 1;
 			}
 		}
 		return sig;

@@ -47,10 +47,10 @@ ejercicio6:
 
 ejercicio7:
 
-	./simusched ej7-1.tsk 1 0 0 SchedMistery 1 10 | ./graphsched.py > ej7/misterio-1.png
+	./simusched ej7-1.tsk 1 0 0 SchedMistery 10 | ./graphsched.py > ej7/misterio-1.png
 	./simusched ej7-1.tsk 1 0 0 SchedMistery 2 4 6 | ./graphsched.py > ej7/misterio-2.png
 	
-	./simusched ej7-1.tsk 1 0 0 SchedNoMistery 1 10 | ./graphsched.py > ej7/no-misterio-1.png
+	./simusched ej7-1.tsk 1 0 0 SchedNoMistery 10 | ./graphsched.py > ej7/no-misterio-1.png
 	./simusched ej7-1.tsk 1 0 0 SchedNoMistery 2 4 6 | ./graphsched.py > ej7/no-misterio-2.png
 
 ejercicio8:
