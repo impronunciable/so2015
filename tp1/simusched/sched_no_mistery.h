@@ -2,6 +2,7 @@
 #define __SCHED_NOMIS__
 
 #include <vector>
+#include <queue>
 #include "basesched.h"
 
 class SchedNoMistery : public SchedBase {
@@ -13,8 +14,8 @@ class SchedNoMistery : public SchedBase {
     virtual int nextTask();  
 
   private:
-	std::vector<int> tareas;
-	std::vector<int> desbloqueadas;
+	std::queue<int> tareas;
+	std::queue<int> desbloqueadas;
 	int quantum; // tiempo restante del cpu
 	std::vector<int> maxQuantums;	// duración total del quantum
 	std::map<int, int> corridas; // cantidad de ejecuciones de una tarea

@@ -12,12 +12,12 @@ SchedNoMistery::SchedNoMistery(vector<int> argn) {
 }
 
 void SchedNoMistery::load(int pid) {
-	tareas.push_back(pid);
+	tareas.push(pid);
 	corridas.insert(make_pair(pid, 0));
 }
 
 void SchedNoMistery::unblock(int pid) {
-	desbloqueadas.push_back(pid);
+	desbloqueadas.push(pid);
 }
 
 void SchedNoMistery::setQuantum(int pid) {
@@ -36,10 +36,10 @@ int SchedNoMistery::nextTask() {
 
 	if(!desbloqueadas.empty()) {
 		pid = desbloqueadas.front();
-		desbloqueadas.erase(desbloqueadas.begin());
+		desbloqueadas.pop();
 	} else {
 		pid = tareas.front();
-		tareas.erase(tareas.begin());
+		tareas.pop();
 	}
 	setQuantum(pid);
 	return pid;
@@ -56,7 +56,7 @@ int SchedNoMistery::tick(int cpu, const enum Motivo m) {
 		} else {
 			quantum -= 1;
 			if (quantum <= 0){
-				tareas.push_back(actual);
+				tareas.push(actual);
 				return nextTask();
 			} else {
 				return actual;
