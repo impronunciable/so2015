@@ -14,6 +14,11 @@ class SchedRR2 : public SchedBase {
 		virtual void unblock(int pid);
 		virtual int tick(int cpu, const enum Motivo m);
 	private:
+		// Función privada
+		// Más que nada por una cuestión de legibilidad
+		// Devuelve el id de la próxima tarea a ejecutar
+		int nextTask(int cpu);
+
 		// cantidad de cores
 		int coreNum;
 		// cola por cada cpu [READY + RUNNING]

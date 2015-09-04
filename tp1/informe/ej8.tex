@@ -3,6 +3,14 @@ entre núcleos. La asignación de CPU se realizaría en el momento de carga de u
 
 \textbf{Implementación}
 
+La implementación de este scheduler no difiere mucho del de la del ejercicio 4, sólo que en este caso se tiene una  cola de procesos por CPU. Además, se posee un entero por CPU (en un vector) que indica la cantidad de procesos activos para cada uno de estos, a ser utilizados cuando se cargue un proceso nuevo. Por último, poseemos un mapa de procesos para saber a qué CPU corresponde cada uno.
+
+Al cargar un proceso, se obtiene el índice (CPU) del mínimo elemento del vector de "activos" y con eso se empuja el proceso a la cola correspondiente y se aumenta la cantidad de activos. Por último, se agrega el proceso con su CPU al mapa de procesos.
+
+Al hacer un tick, la única diferencia con el código del ejercicio 4, además de elegir la cola correspondiente al cpu indicado, es al momento de finalización de una tarea. En este caso, se le resta uno a la cantidad de activos del CPU y se elimina al proceso del mapa de procesos. Luego, es análogo.
+
+Al desbloquearse un proceso, simplemente se obtiene el CPU del mismo a través del mapa de procesos. Con esto, se empuja al proceso al core correspondiente.
+
 \textbf{Ejemplos}
 
 Un escenario en el que este scheduler es peor en contraposición con el Round-Robin tradicional, es cuando se van alternando procesos de corta duración con procesos que tarden bastante, como por ejemplo sería el caso de INSERTE EJEMPLO DE LA VIDA REAL AQUÍ. En este caso, terminarían primero los procesos de corta duración, quedando cpus sin ningún proceso asignado; no se estarían utilizando, realentizando el tiempo de compleción de los procesos y probablemente su tiempo de espera. Sin embargo, la latencia no se vería afectada y sería la misma en ambos casos.

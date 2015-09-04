@@ -15,8 +15,7 @@ SchedRR2::SchedRR2(vector<int> argn) {
 	quantum = vector<int>(coreNum, maxQuantum);
 
 	colas = std::vector<std::queue<int> >(coreNum);
-	cout << "coreNum: " << coreNum << endl;
-	activos = std::vector<int>(coreNum);
+	activos = std::vector<int>(coreNum, 0);
 }
 
 SchedRR2::~SchedRR2() {
@@ -28,13 +27,13 @@ void SchedRR2::load(int pid) {
 	// Obtengo qué core tiene menos procesos activos
 	int core = 0;
 	int minElem = activos[0]; //Por lo menos hay un core
+	// Nos fijamos cuál core tiene menos procesos activos
 	for (unsigned int i = 0; i < activos.size(); ++i){
 		if (activos[i] < minElem){
 			minElem = activos[i];
 			core = i;
 		}
 	}
-	//cout << "minCore: " << core << endl;
 	// Carga la tarea para ser usada en el core determinado
 	colas[core].push(pid);
 	// Agrego uno a la cantidad de procesos del core seleccionado
@@ -48,79 +47,72 @@ void SchedRR2::unblock(int pid) {
 	colas[procesos[pid]].push(pid);
 }
 
+int SchedRR2::nextTask(int cpu){
+	// Si la cola del cpu actual está vacía
+	if (colas[cpu].empty()){
+		// Devolvemos la tarea IDLE
+		return IDLE_TASK;
+	} else {
+		// Si hay algo, ese proceso será el siguiente
+		int sig = colas[cpu].front();
+		// Se quita de la cola del CPU correspondiente
+		colas[cpu].pop();
+		// Se resetea el quantum
+		quantum[cpu] = maxQuantum;
+		// Y se devuleve
+		return sig;
+	}
+}
+
 int SchedRR2::tick(int cpu, const enum Motivo m) {
 	// Motivo puede ser TICK, BLOCK, EXIT...
 	switch(m){
 	case TICK: {
-		// La tarea actual es la que se está corriendo
+		// obtenemos la tarea actual
 		int actual = current_pid(cpu);
-		// por defecto, el siguiente es la actual
-		int sig = actual;
 
 		if (actual == IDLE_TASK){
-
-			if (colas[cpu].empty()){
-				return IDLE_TASK;
-			} else {
-				int buffer = colas[cpu].front();
-				colas[cpu].pop();
-				quantum[cpu] = maxQuantum;
-				return buffer;
-			}
-
+			return nextTask(cpu);
 		} else {
-
 			// Si se le acaba el quantum, le toca al próximo
 			if (quantum[cpu] <= 0){
-				// Agregamos a la cola la tarea que acaba
-				// de ser procesada	por falta de quantum
+				// Agregamos a la cola la tarea que acaba de ser procesada
+				// por falta de quantum
 				colas[cpu].push(actual);
 				// El siguiente es el primero en la fila
-				sig = colas[cpu].front();
+				actual = colas[cpu].front();
+				// Se quita de la cola correspondiente
 				colas[cpu].pop();
 				// Finalmente, reseteamos el quantum
 				quantum[cpu] = maxQuantum;
+				// ...y lo devolvemos!
+				return actual;
 			} else {
+				// Si queda quantum, restamos uno
 				quantum[cpu] -= 1;
+				// Y devolvemos la tarea actual
+				return actual;
 			}
 		}
-		return sig;
+
 	}
 	break;
 	case BLOCK:
-		if (colas[cpu].empty()){
-			return IDLE_TASK;
-		} else {
-			// Reseteamos el quantum
-			quantum[cpu] = maxQuantum;
-			// El siguiente es el primero en la fila
-			int sig = colas[cpu].front();
-			colas[cpu].pop();
-			return sig;
-		}
+		// Si la tarea se bloquea, se pasa a la próxima
+		return nextTask(cpu);
 	break;
 	case EXIT:
 		// Ya no es un proceso activo,
 		// por lo que restamos uno a ese core
 		activos[cpu] -= 1;
-		// Está bueno quitar este proceso del mapa de procesos
+		// Quitar este proceso del mapa de procesos
 		// Así desbloquear sería más rápido
 		// Hacer esto sería logarítmico en la cantidad de procesos activos
 		// totales, lo cual realentiza la finalización de un proceso, pero
 		// creo que vale la pena
 		procesos.erase(current_pid(cpu));
 
-		// Si no hay más elementos, terminamos
-		if (colas[cpu].empty()){
-			return IDLE_TASK;
-		} else {
-			// Reseteamos el quantum
-			quantum[cpu] = maxQuantum;
-			// El siguiente es el primero en la fila
-			int sig = colas[cpu].front();
-			colas[cpu].pop();
-			return sig;
-		}
+		return nextTask(cpu);
 	break;
 	default:
 		return IDLE_TASK;

@@ -14,10 +14,19 @@ class SchedRR : public SchedBase {
 		virtual int tick(int cpu, const enum Motivo m);
 
 	private:
+		// Función privada
+		// Más que nada por una cuestión de legibilidad
+		// Devuelve el id de la próxima tarea a ejecutar
+		int nextTask(int cpu);
+
+		// Cola de procesos a ejecutar
 		std::queue<int> cola;
-		int coreNum; // cantidad de cores
-		std::vector<int> quantum; // tiempo restante por cada cpu
-		int maxQuantum;	// duración total del quantum
+		// cantidad de cores
+		int coreNum;
+		// tiempo restante por cada cpu
+		std::vector<int> quantum;
+		// duración total del quantum
+		int maxQuantum;
 };
 
 #endif

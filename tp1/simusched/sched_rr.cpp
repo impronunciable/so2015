@@ -2,19 +2,19 @@
 #include <queue>
 #include "sched_rr.h"
 #include "basesched.h"
-#include <iostream>
 
 using namespace std;
 
 SchedRR::SchedRR(vector<int> argn) {
-	// Round robin recibe la cantidad de cores y sus cpu_quantum por parámetro
+	// Round-Robin recibe la cantidad de cores y sus cpu_quantum por parámetro
+	// Inicializamos todo
 	coreNum = argn[0];
 	maxQuantum = argn[1];
 	quantum = vector<int>(coreNum, maxQuantum);
 }
 
 SchedRR::~SchedRR() {
-
+	// :(
 }
 
 void SchedRR::load(int pid) {
@@ -27,79 +27,60 @@ void SchedRR::unblock(int pid) {
 	cola.push(pid);
 }
 
+int SchedRR::nextTask(int cpu){
+	// Si la cola estuviera vacía
+	if (cola.empty()){
+		// devolvemos IDLE
+		return IDLE_TASK;
+	} else {
+		// El siguiente es el primero en la fila
+		int sig = cola.front();
+		// Reseteamos el quantum
+		quantum[cpu] = maxQuantum;
+		// Lo quitamos de la fila
+		cola.pop();
+		// y lo devolvemos
+		return sig;
+	}
+}
+
 int SchedRR::tick(int cpu, const enum Motivo m) {
-	// Motivo puede ser TICK, BLOCK, EXIT...
-	//cout << "size: " << cola.size() << endl;
+	// Motivo puede ser TICK, BLOCK ó EXIT...
 	switch(m){
 	case TICK: {
-		// La tarea actual es la que se está corriendo
+		// obtenemos la tarea actual
 		int actual = current_pid(cpu);
-		// por defecto, el siguiente es la actual
-		int sig = actual;
-
+		
 		if (actual == IDLE_TASK){
-
-			if (cola.empty()){
-				return IDLE_TASK;
-			} else {
-				//cout << "Salgo " << current_pid(cpu) << endl;
-				int buffer = cola.front();
-				////cout << "Sacamos a " << cola.front() << endl;
-				cola.pop();
-				//cout << endl;
-				quantum[cpu] = maxQuantum;
-				return buffer;
-			}
-
+			return nextTask(cpu);
 		} else {
-
-			// Si se le acaba e:l quantum, le toca al próximo
-			//cout << "me qued a"<<quantum[cpu] << endl;
+			// Si se le acaba el quantum, le toca al próximo
 			if (quantum[cpu] <= 0){
 				// Agregamos a la cola la tarea que acaba
 				// de ser procesada	por falta de quantum
 				cola.push(actual);
 				// El siguiente es el primero en la fila
-				//cout << actual << "actual"<< endl;
-				sig = cola.front();
-				//cout << sig << "siguiente"<<endl;
-				cola.pop(); //Experimental
-				// Finalmente, reseteamos el quantum
+				actual = cola.front();
+				// Lo quitamos...
+				cola.pop();
+				// y finalmente, reseteamos el quantum
 				quantum[cpu] = maxQuantum;
+				// y devolvemos al próximo proceso
+				return actual;
 			} else {
+				// Si todavía le queda, restamos 1
 				quantum[cpu] -= 1;
+				// y seguimos con el mismo proceso
+				return actual;
 			}
 		}
-		return sig;
 	}
 	break;
 	case BLOCK:
-		if (cola.empty()){
-			return IDLE_TASK;
-		} else {
-			// Reseteamos el quantum
-			quantum[cpu] = maxQuantum;
-			// El siguiente es el primero en la fila
-			int sig = cola.front();
-			cola.pop();
-			return sig;
-		}
+		return nextTask(cpu);
 	break;
 	case EXIT:
-		//cout << "terminé!" << endl;
-		//cout << "Soy: " << current_pid(cpu) << endl;
-		// Si no hay más elementos, terminamos
-		if (cola.empty()){
-			return IDLE_TASK;
-		} else {
-			// Reseteamos el quantum
-			quantum[cpu] = maxQuantum;
-			// El siguiente es el primero en la fila
-			int sig = cola.front();
-			//cout << "Sacamos a " << sig << endl;
-			cola.pop();
-			return sig;
-		}
+		return nextTask(cpu);
 	break;
 	default:
 		return IDLE_TASK;
