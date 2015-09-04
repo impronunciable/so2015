@@ -50,10 +50,12 @@ int SchedRR::tick(int cpu, const enum Motivo m) {
 	case TICK: {
 		// obtenemos la tarea actual
 		int actual = current_pid(cpu);
-		
+
 		if (actual == IDLE_TASK){
 			return nextTask(cpu);
 		} else {
+			// Restamos 1 al quantum
+			quantum[cpu] -= 1;
 			// Si se le acaba el quantum, le toca al próximo
 			if (quantum[cpu] <= 0){
 				// Agregamos a la cola la tarea que acaba
@@ -68,8 +70,6 @@ int SchedRR::tick(int cpu, const enum Motivo m) {
 				// y devolvemos al próximo proceso
 				return actual;
 			} else {
-				// Si todavía le queda, restamos 1
-				quantum[cpu] -= 1;
 				// y seguimos con el mismo proceso
 				return actual;
 			}
