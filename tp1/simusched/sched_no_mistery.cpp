@@ -12,7 +12,7 @@ SchedNoMistery::SchedNoMistery(vector<int> argn) {
 }
 
 void SchedNoMistery::load(int pid) {
-	tareas.push(pid);
+	entradas.push(pid);
 	corridas.insert(make_pair(pid, 0));
 }
 
@@ -32,11 +32,14 @@ void SchedNoMistery::setQuantum(int pid) {
 
 int SchedNoMistery::nextTask() {
 	int pid;
-	if(desbloqueadas.empty() && tareas.empty()) return IDLE_TASK;
+	if(desbloqueadas.empty() && tareas.empty() && entradas.empty()) return IDLE_TASK;
 
 	if(!desbloqueadas.empty()) {
 		pid = desbloqueadas.front();
 		desbloqueadas.pop();
+    } else if(!entradas.empty()) {
+		pid = entradas.front();
+		entradas.pop();
 	} else {
 		pid = tareas.front();
 		tareas.pop();
