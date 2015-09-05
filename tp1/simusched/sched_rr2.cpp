@@ -11,8 +11,17 @@ SchedRR2::SchedRR2(vector<int> argn) {
 	// Round robin recibe la cantidad de cores y sus cpu_quantum por parámetro
 	// Inicialización de cosas
 	coreNum = argn[0];
-	maxQuantum = argn[1];
-	quantum = vector<int>(coreNum, maxQuantum);
+	if ((int)argn.size() < coreNum+1){
+		cout << "No hay suficientes quantums para la cantidad de núcleos indicada!" << endl;
+		exit(1);
+	}
+
+	maxQuantum = vector<int>(coreNum);
+	quantum = vector<int>(coreNum);
+	for (int i = 0; i < coreNum; ++i){
+		maxQuantum[i] = argn[i + 1];
+		quantum[i] = maxQuantum[i];
+	}
 
 	colas = std::vector<std::queue<int> >(coreNum);
 	activos = std::vector<int>(coreNum, 0);
@@ -58,7 +67,7 @@ int SchedRR2::nextTask(int cpu){
 		// Se quita de la cola del CPU correspondiente
 		colas[cpu].pop();
 		// Se resetea el quantum
-		quantum[cpu] = maxQuantum;
+		quantum[cpu] = maxQuantum[cpu];
 		// Y se devuleve
 		return sig;
 	}
@@ -86,7 +95,7 @@ int SchedRR2::tick(int cpu, const enum Motivo m) {
 				// Se quita de la cola correspondiente
 				colas[cpu].pop();
 				// Finalmente, reseteamos el quantum
-				quantum[cpu] = maxQuantum;
+				quantum[cpu] = maxQuantum[cpu];
 				// ...y lo devolvemos!
 				return actual;
 			} else {

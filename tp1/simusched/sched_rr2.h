@@ -31,8 +31,8 @@ class SchedRR2 : public SchedBase {
 
 		// tiempo restante por cada cpu
 		std::vector<int> quantum;
-		// duración total del quantum
-		int maxQuantum;
+		// duración total del quantum por CPU
+		std::vector<int> maxQuantum;
 };
 
 #endif

@@ -23,15 +23,23 @@ tasks.o: tasks.cpp tasks.h basetask.h
 clean:
 	rm -f $(OBJS) $(MAIN)
 
+cleanpng:
+	rm *.png
+
 ejercicio1:
+	./simusched ej5.tsk 1 1 1 SchedFCFS | ./graphsched.py > ej1.png
 
 ejercicio2:
+	./simusched ej2.tsk 1 1 1 SchedFCFS | ./graphsched.py > ej2-1core.png
+	./simusched ej2.tsk 2 1 1 SchedFCFS | ./graphsched.py > ej2-2core.png
 
 ejercicio3:
+	./simusched ej3.tsk 1 1 1 SchedFCFS | ./graphsched.py > ej3.png
 
 ejercicio4:
 	./simusched ej4.tsk 1 2 0 SchedRR 3 | ./graphsched.py > ej4-1core.png
 	./simusched ej4.tsk 2 1 0 SchedRR 2 5 2 | ./graphsched.py > ej4-2core.png
+
 ejercicio5:
 # 1 core
 	./simusched ej5.tsk 1 2 0 SchedRR 2 | ./graphsched.py > ej5-2q-1c.png
@@ -57,10 +65,9 @@ ejercicio7:
 	./simusched ej7-3.tsk 1 1 0 SchedNoMistery 2 4 6 | ./graphsched.py > ej7/no-misterio-3.png
 
 ejercicio8:
-	./simusched ej8_malo.tsk 2 1 1 SchedRR2 2 | ./graphsched.py > ej8MaloRR2.png
-	./simusched ej8_malo.tsk 2 1 1 SchedRR 2 | ./graphsched.py > ej8MaloRR.png
-	./simusched ej8_bueno.tsk 2 1 0 SchedRR2 2 | ./graphsched.py > ej8BuenoRR2.png
-	./simusched ej8_bueno.tsk 2 1 0 SchedRR 2 | ./graphsched.py > ej8BuenoRR.png
-
+	./simusched ej8_malo.tsk 2 1 1 SchedRR2 2 2 | ./graphsched.py > ej8MaloRR2.png
+	./simusched ej8_malo.tsk 2 1 1 SchedRR 2 2 | ./graphsched.py > ej8MaloRR.png
+	./simusched ej8_bueno.tsk 2 1 0 SchedRR2 2 2 | ./graphsched.py > ej8BuenoRR2.png
+	./simusched ej8_bueno.tsk 2 1 0 SchedRR 2 2 | ./graphsched.py > ej8BuenoRR.png
 
 new: clean all
