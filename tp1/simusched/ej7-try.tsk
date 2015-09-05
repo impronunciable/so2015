@@ -1,6 +1,6 @@
 *3 TaskCPU 20
 *2 TaskConsola 5 3 3
-@4
-TaskCPU 2
+@50
+TaskCPU 20
 @10
-*2 TaskConsola 1 1 1
+TaskCPU 20

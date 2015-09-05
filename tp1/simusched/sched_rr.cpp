@@ -2,6 +2,7 @@
 #include <queue>
 #include "sched_rr.h"
 #include "basesched.h"
+#include <iostream>
 
 using namespace std;
 
@@ -9,8 +10,20 @@ SchedRR::SchedRR(vector<int> argn) {
 	// Round-Robin recibe la cantidad de cores y sus cpu_quantum por parámetro
 	// Inicializamos todo
 	coreNum = argn[0];
-	maxQuantum = argn[1];
-	quantum = vector<int>(coreNum, maxQuantum);
+
+	if ((int)argn.size() < coreNum+1){
+		cout << "No hay suficientes quantums para la cantidad de núcleos indicada!" << endl;
+		exit(1);
+	}
+
+	maxQuantum = vector<int>(coreNum);
+	quantum = vector<int>(coreNum);
+
+	for (int i = 0; i < coreNum; ++i){
+		maxQuantum[i] = argn[i + 1];
+		quantum[i] = maxQuantum[i];
+	}
+
 }
 
 SchedRR::~SchedRR() {
@@ -36,7 +49,7 @@ int SchedRR::nextTask(int cpu){
 		// El siguiente es el primero en la fila
 		int sig = cola.front();
 		// Reseteamos el quantum
-		quantum[cpu] = maxQuantum;
+		quantum[cpu] = maxQuantum[cpu];
 		// Lo quitamos de la fila
 		cola.pop();
 		// y lo devolvemos
@@ -66,7 +79,7 @@ int SchedRR::tick(int cpu, const enum Motivo m) {
 				// Lo quitamos...
 				cola.pop();
 				// y finalmente, reseteamos el quantum
-				quantum[cpu] = maxQuantum;
+				quantum[cpu] = maxQuantum[cpu];
 				// y devolvemos al próximo proceso
 				return actual;
 			} else {

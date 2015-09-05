@@ -30,20 +30,21 @@ ejercicio2:
 ejercicio3:
 
 ejercicio4:
-	./simusched ej4.tsk 1 2 0 SchedRR 1 3 | ./graphsched.py > ej4-1core.png
-	./simusched ej4.tsk 2 1 0 SchedRR 2 2 | ./graphsched.py > ej4-2core.png
+	./simusched ej4.tsk 1 2 0 SchedRR 3 | ./graphsched.py > ej4-1core.png
+	./simusched ej4.tsk 2 1 0 SchedRR 2 5 2 | ./graphsched.py > ej4-2core.png
 ejercicio5:
-	# 1 core
-	./simusched ej5.tsk 1 2 0 SchedRR 1 2 | ./graphsched.py > ej5-2q-1c.png
-	./simusched ej5.tsk 1 2 0 SchedRR 1 10 | ./graphsched.py > ej5-10q-1c.png
-	./simusched ej5.tsk 1 2 0 SchedRR 1 50 | ./graphsched.py > ej5-50q-1c.png
+# 1 core
+	./simusched ej5.tsk 1 2 0 SchedRR 2 | ./graphsched.py > ej5-2q-1c.png
+	./simusched ej5.tsk 1 2 0 SchedRR 10 | ./graphsched.py > ej5-10q-1c.png
+	./simusched ej5.tsk 1 2 0 SchedRR 50 | ./graphsched.py > ej5-50q-1c.png
 
-	# 3 cores
-	./simusched ej5.tsk 3 2 0 SchedRR 3 2 | ./graphsched.py > ej5-2q-3c.png
-	./simusched ej5.tsk 3 2 0 SchedRR 3 10 | ./graphsched.py > ej5-10q-3c.png
-	./simusched ej5.tsk 3 2 0 SchedRR 3 50 | ./graphsched.py > ej5-50q-3c.png
+# 3 cores. No necesario.
+#	./simusched ej5.tsk 3 2 0 SchedRR 3 2 | ./graphsched.py > ej5-2q-3c.png
+#	./simusched ej5.tsk 3 2 0 SchedRR 3 10 | ./graphsched.py > ej5-10q-3c.png
+#	./simusched ej5.tsk 3 2 0 SchedRR 3 50 | ./graphsched.py > ej5-50q-3c.png
 
 ejercicio6:
+	./simusched ej5.tsk 1 2 0 SchedFCFS | ./graphsched.py > ej6.png
 
 ejercicio7:
 
