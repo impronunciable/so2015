@@ -58,8 +58,8 @@ ejercicio7:
 ejercicio8:
 	./simusched ej8_malo.tsk 2 1 1 SchedRR2 2 | ./graphsched.py > ej8MaloRR2.png
 	./simusched ej8_malo.tsk 2 1 1 SchedRR 2 | ./graphsched.py > ej8MaloRR.png
-#./simusched ej8_bueno.tsk 2 1 1 SchedRR2 2 | ./graphsched.py > ej8BuenoRR2.png
-#./simusched ej8_bueno.tsk 2 1 1 SchedRR 2 | ./graphsched.py > ej8BuenoRR.png
+	./simusched ej8_bueno.tsk 2 1 0 SchedRR2 2 | ./graphsched.py > ej8BuenoRR2.png
+	./simusched ej8_bueno.tsk 2 1 0 SchedRR 2 | ./graphsched.py > ej8BuenoRR.png
 
 
 new: clean all
