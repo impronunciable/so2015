@@ -1,8 +1,8 @@
 
 Ejercicio 7
 
-El lote ej-7-2 (ej7/misterio-2.png) Identifica que SchedMistery hace un round-robin, switcheando entre las tareas y suspendiendo la ejecución de una tarea mientras se encuentra bloqueada. Muestra también que en los casos donde no hay nada por hacer se debe saltar a la tarea IDLE.
+-El lote ej-7-1 (ej7/misterio-1.png) nos muestra que se hace un round robin y que las tareas desbloqueadas `ganan` prioridad
 
-El lote ej-7-3 (ej7/misterio-3.png) Muestra que los parámetros que recibe el scheduler son los quantums iniciales de las tareas. Por ejemplo recibir como parámetros los valores `2 4 6` significa que cada tarea obtiene un primer quantum de 2, el segundo de 4, tercero de 6 y luego mantiene un quantum de 6.
+-El lote ej-7-2 (ej7/misterio-2.png) nos muestra que hay 1 cola de prioridad por cada parametro
 
-el lote ej-7-1 (ej7/misterio-1.png) Nos llevó a darnos cuenta que el round-robin cuenta con 2 colas. La cola típica de round-robin y otra con mayor prioridad para tareas recientemente desbloqueadas. Es decir, cuando una tarea es desbloqueada, en vez de ser devuelta a la cola inicial, entra en una cola prioritaria de tareas desbloqueadas. Al switchear de tareas siempre se chequea antes la cola prioritaria y cuando se consume una tarea desbloqueada ya pasa nuevamente a la cola regular, salvo que sea bloqueada.
+-El lote ej-7-3 (ej7/misterio-3.png) nos muestra que al empezar una tarea tiene mayor prioridad que si ya estaba corriendo
