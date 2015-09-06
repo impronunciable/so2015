@@ -18,18 +18,8 @@ void SchedNoMistery::load(int pid) {
 }
 
 void SchedNoMistery::unblock(int pid) {
-	for(int i = 0; i < bloqueadas.size(); i++) {
-		if(bloqueadas[i] == pid) {
-			if(tareas[pid] > 0) {
-				tareas[pid]--;
-			}
-			colas[tareas[pid]].push(pid);
-
-			vector<int>::iterator it = bloqueadas.begin() + i;
-			bloqueadas.erase(it);
-			break;
-		}
-	}
+	tareas[pid] = tareas[pid] > 0 ? tareas[pid] - 1 : 0;
+	colas[tareas[pid]].push(pid);
 }
 
 int SchedNoMistery::proxima() {
@@ -67,7 +57,6 @@ int SchedNoMistery::tick(int cpu, const enum Motivo m) {
 	}
 	break;
 	case BLOCK:
-		bloqueadas.push_back(actual);
 	case EXIT:
 	return proxima();
 	break;
