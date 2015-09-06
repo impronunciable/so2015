@@ -307,7 +307,15 @@ Los an\'alisis respecto del waiting time y el tiempo total de ejecuci\'on son si
 
 \clearpage
 \begin{homeworkProblem}[Ejercicio 6]
-    Work in progress...
+Lo que tenemos a continuaci\'on (Figura 8) es, seg\'un se pide, el gr\'afico correspondiente al mismo lote de tareas del ejercicio anterior pero en este caso para el scheduler \textbf{FCFS}.
+        \begin{figure}[h]
+            \includegraphics[width=1\textwidth]{ej6}
+            \caption{}
+        \end{figure} \\
+Tanto conceptualmente, como en la pr\'actica, Round-Robin y \textbf{FCFS} son schedulers diametralmente distintos. Son distintos desde la definici\'on hasta (o, mejor dicho, \textit{como consecuencia de}) aquellos aspectos que buscan privilegiar al momento de asignar los recursos de procesamiento del sistema. \textbf{FCFS} es, por definici\'on, un scheduler que asigna los recursos al primer proceso que los solicita. \textit{\textbf{F}irst \textbf{Come} \textbf{F}irst \textbf{S}erve} es el significado de sus siglas en ingl\'es. En nuestro ejemplo, el proceso que llega en primer lugar es el proceso 0 (\textit{p0} de ahora en adelante). En la Figura 8 se puede ver c\'omo p0 es el primer proceso en comenzar a ejecutar. El mencionado es un aspecto importante de la definici\'on del \textbf{FCFS}, aunque no la abarca totalmente. Bien vistos, los gr\'aficos correspondientes a las corridas del Ejecicio 5 (Figura 5, Figura 6, y Figura 7) nos advierten que con lo mencionado hasta ac\'a no alcanza para diferenciar al \textbf{FCFS} del Round-Robin: sin importar el quantum utilizado, el primer proceso en empezar a ejecutar es, en todos los casos, p0. No es (desde ya) una casualidad. Un scheduler Round-Robin tiene por lo general una pol\'itica \textbf{FIFO} (\textit{\textbf{F}irst \textbf{I}n \textbf{F}irst \textbf{O}ut}) para la elecci\'on del orden de los procesos a ejecutar. Esto es aparentemente muy similar a lo que ocurre con un \textbf{FCFS}... \mbox{¿}entonces? Round-Robin agrega un extra: \textit{preemption}. Como dato de color, la traducci\'on de \textit{preemption} seg\'un el portal translate.google.com es: \\
+- derecho preferente de compra \\
+- preempci\'on \\
+De m\'as est\'a seguramente aclarar que no ser\'a esa traducci\'on nuestro punto de partida. Hablar de \textit{preemption} es hablar de desalojo. Round-Robin, a diferencia de \textbf{FCFS}, desaloja procesos. El criterio para hacerlo es el tiempo que el proceso lleva efectivamente ejecutando. \textit{Quantum} es el nombre que usamos para referirnos al m\'aximo tiempo que el scheduler le permite a un proceso ejecutar antes de darle permiso a otro proceso (a costa del primero, que es desalojado). Volviendo a los gr\'aficos podemos ver c\'omo aquellos que usan un scheduler Round-Robin (Figura 5, Figura 6, y Figura 7) nos muestran procesos que ejecutan s\'olo durante el quantum asignado (ahora s\'i hace diferencia el quantum definido), en contraste con aquel que usa un scheduer \textbf{FCFS} (Figura 8) en donde los procesos ejecutan hasta que terminar (en caso de terminar). Dijimos anteriormente que son distintos los aspectos que cada tipo de scheduler busca privilegiar. Ahora podemos agregar m\'as detalle a aquella sentencia: mientras que un scheduler \textbf{FCFS} busca minimizar el Waiting time y el tiempo total de ejecuci\'on v\'ia minimizar el costo por los sucesivos cambios de contexto (de la forma detallada en el Ejercicio 5), un scheduler Round-Robin paga ese costo a cambio de un criterio m\'as \textit{justo}. Justo en lo que a tiempo de espera se refiere.
 \end{homeworkProblem}
 
 \clearpage
@@ -349,3 +357,4 @@ Los an\'alisis respecto del waiting time y el tiempo total de ejecuci\'on son si
 % TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 % SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %----------------------------------------------------------------------%
+
