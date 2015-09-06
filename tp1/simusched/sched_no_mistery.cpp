@@ -12,6 +12,10 @@ SchedNoMistery::SchedNoMistery(vector<int> argn) {
 	colas = new queue<int>[colas_len];
 }
 
+SchedNoMistery::~SchedNoMistery() {
+	delete []colas;
+}
+
 void SchedNoMistery::load(int pid) {
 	colas[0].push(pid);
 	tareas.insert(make_pair(pid, 0));
