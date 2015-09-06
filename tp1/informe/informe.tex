@@ -1,7 +1,4 @@
 \documentclass{report}
-\usepackage[utf8]{inputenc}
-\usepackage[spanish]{babel}
-\usepackage[T1]{fontenc}
 
 \usepackage{amsmath,amsfonts,amsthm,amssymb}
 \usepackage{setspace}
@@ -16,6 +13,10 @@
 \usepackage{listings}
 \usepackage{color}
 \usepackage{multirow}
+\usepackage{csquotes}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
 \usepackage{caption}
 
 % Some configurations
@@ -40,14 +41,14 @@
 \renewcommand{\headrulewidth}{0pt}                   % Remove header line
 \lfoot{\lastxmark}                                   %
 \cfoot{}                                             %
-\rfoot{Page\ \thepage\ of\ \pageref{LastPage}}       %
+\rfoot{P\'agina\ \thepage\ de\ \pageref{LastPage}}       %
 \renewcommand\footrulewidth{0.4pt}                   %
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Some tools
-\newcommand{\enterProblemHeader}[1]{\nobreak\extramarks{#1}{#1 continuado en la próxima página\ldots}\nobreak%
-                                    \nobreak\extramarks{#1 (continued)}{#1 continuado en la próxima página\ldots}\nobreak}%
-\newcommand{\exitProblemHeader}[1]{\nobreak\extramarks{#1 (continued)}{#1 continuado en la próxima página\ldots}\nobreak%
+\newcommand{\enterProblemHeader}[1]{\nobreak\extramarks{#1}{#1 contin\'ua en la siguiente p\'agina\ldots}\nobreak%
+                                    \nobreak\extramarks{#1 (continued)}{#1 contin\'ua en la siguiente p\'agina\ldots}\nobreak}%
+\newcommand{\exitProblemHeader}[1]{\nobreak\extramarks{#1 (continued)}{#1 contin\'ua en la siguiente p\'agina\ldots}\nobreak%
                                    \nobreak\extramarks{#1}{}\nobreak}%
 
 \newlength{\labelLength}
@@ -148,7 +149,7 @@
             \end{center} 
 
 \textbf{Gr\'afico de un lote de tareas} \\
-        El gr\'afico a continuaci\'on (\textit{Figure 1}) corresponde a un lote de 1 tarea que realiza 4 llamadas bloqueantes de entre 2 y 7 tiempos de duraci\'on: \\
+        El gr\'afico a continuaci\'on (\textit{Figura 1}) corresponde a un lote de 1 tarea que realiza 4 llamadas bloqueantes de entre 2 y 7 tiempos de duraci\'on: \\
         \begin{figure}[h]
             \includegraphics[width=1\textwidth]{ej1}
             \caption{}
@@ -166,7 +167,7 @@ No son muchas las cosas a revisar, entre ellas: \\
     Nuestro primer encargo es escribir un lote de tareas que simule la situaci\'on de Rolando descripta en el enunciado. Este lote incluye entonces una primer corrida de 100 ciclos de CPU en ning\'un caso bloqueantes buscando simular los 100 ciclos de corrida del algoritmo complejo de Rolando. Nos valemos para ello de la funci\'on provista \textit{TaskCPU}. Lo siguiente ser\'an 2 tareas con llamadas bloqueantes de una duraci\'on variable dentro de un rango; en otras palabras, 2 tareas que realizan exactamente aquello que se nos pidi\'o en el primer ejecicio del trabajo pr\'actico. Usamos entonces la tarea \textit{TaskConsola} con los par\'ametros correspondientes para simular las tareas de ocio de Rolando. \\
     
     \textbf{Gr\'aficos utilizando 1 y 2 n\'ucleos} \\
-    Los gr\'aficos a continuaci\'on (\textit{Figure 2}) corresponden a la ejecuci\'on de la simulaci\'on utilizando el algoritmo FCFS para 1 core (Figure 2) y para 2 cores (Figure 3). En ambos casos el costo de cambio de contexto es de 4 ciclos.
+    Los gr\'aficos a continuaci\'on (\textit{Figura 2}) corresponden a la ejecuci\'on de la simulaci\'on utilizando el algoritmo \textbf{FCFS} para 1 core (Figura 2) y para 2 cores (Figura 3). En ambos casos el costo de cambio de contexto es de 4 ciclos.
     
     \begin{figure}[h]
         \includegraphics[width=1\textwidth]{ej2-1core}
@@ -179,11 +180,11 @@ No son muchas las cosas a revisar, entre ellas: \\
     \end{figure}
 
     \textbf{Latencia} \\
-    La siguiente asignatura es el c\'alculo de la latencia de cada una de las tareas en cada uno de los dos casos:
+    La siguiente asignatura es el c\'alculo de la latencia de cada una de las tareas en cada uno de los dos casos anteriores:
 \begin{table}[h]
   \begin{center}
 \begin{tabular}{c|c|c|c}
-        & Tarea 1 & Tarea 2 & Tarea 3 \\
+        & Tarea 0 & Tarea 1 & Tarea 2 \\
 \hline
 1 core  & 4       & 109     & 193     \\
 \hline
@@ -191,23 +192,117 @@ No son muchas las cosas a revisar, entre ellas: \\
 \end{tabular}
   \end{center}
 \end{table}
+
+\textbf{Desventajas} \\
+Hablar de desventajas suena a poco: si lo Rolando cuenta con una computadora de un n\'ucleo que usa un algoritmo de scheduling \textbf{FCFS}, va a tener que matar su aburrimiento con alguna otra actividad que no incluya la computadora en la que est\'a corriendo su complejo algoritmo, ya que ning\'un otro proceso va a tener CPU disponible para comenzar a ejecutar. En otras palabras, Rolando no podr\'a reproducir ning\'un tema musical hasta que el algoritmo no concluya. Esta circunstancia se puede llegar a apreciar en el gr\'afico correspondiente a la ejecuci\'on de la simulaci\'on utilizando el algoritmo \textbf{FCFS} para 1 core (Figura 2), en donde el primer proceso (proceso 0) se ejecuta de corrido, sin parar ni dejar posibilidad de ejecuci\'on a otros procesos. La diferencia es m\'as notable considerando e gr\'afico correspondiente a la ejecuci\'on de la simulaci\'on utilizando el algoritmo \textbf{FCFS} para 2 cores (Figura 3) en donde la existencia de un core extra implica la posibilidad de que (a lo sumo) un proceso distinto del proceso 0 pueda ser ejecutado sin necesidad de esperar la conclusi\'on del primero.
     
     
 \end{homeworkProblem}
 
 \clearpage
 \begin{homeworkProblem}[Ejercicio 3]
-    Work in progress...
+    El tercer ejercicio nos invita a programar \textbf{TaskBatch}, esto es, una tarea que realiza \textit{cant\_bloqueos} llamadas bloqueantes en momentos elegidos de forma pseudoaleatoria, y que utilice \textit{total\_cpu} ciclos de reloj. \\
+    
+    \textbf{Implementaci\'on} \\
+Para la implentaci\'on de la tarea pedida utilizamos 2 vectores: \\
+- el primero de ellos es un vector de booleanos (de nombre \textit{ticks} en el c\'odigo) y nos permiti\'o discretizar el tiempo que la tarea debe permanecer corriendo. Tiene tama\~no \textit{total\_cpu}, y cada posici\'on representa un ciclo de reloj. ticks[i] es \textbf{true} si y s\'olo si durante el ciclo \textit{i} la tarea se bloquea \\
+- mientras que el segundo, \textit{posTiempo}, es un vector de enteros de mismo tama\~no que \textit{ticks} inicializado con el valor correspondiente a la posici\'on en cada caso. \\ 
+Es posible que se trate de detalles poco significativos de la implementaci\'on, pero si llegamos hasta ac\'a, los mencionamos: lo que hacemos es desordenar \textit{posTiempo} y asignar el valor \textbf{true} a cada una de las posiciones de \textit{ticks} correspondientes a los primeros \textit{cant\_bloqueos} valores de \textit{posTiempo}. \\
+Como hicimos anteriormente, las llamadas bloqueantes las implementamos usando la funci\'on \textit{uso\_IO}, mientras que aquellas no bloqueantes usando \textit{uso\_CPU}. \\
+
+    \textbf{Gr\'afico} \\
+A continuanci\'on (Figura 4) exponemos el gr\'afico resultado de de un lote de 3 tareas \textbf{TaskBatch} con diferentes par\'ametros (distinta duraci\'on y distinta cantidad de bloqueos en cada caso) y \textbf{FCFS} como scheduler. \\
+        \begin{figure}[h]
+            \includegraphics[width=1\textwidth]{ej3}
+            \caption{}
+        \end{figure} \\
+No se nos sugiri\'o ninguna catidad de cores en particular, de modo que elegimos 1 core como opci\'on para nuestra corrida. Esto se puede apreciar notando la ejecuci\'on secuencial de las tareas, que en ning\'un caso arrancan sin que la tarea que las precede concluya. 
+
+
 \end{homeworkProblem}
 
 \clearpage
 \begin{homeworkProblem}[Ejercicio 4]
-    Work in progress...
+    El cuarto ejercicio no solicita m\'as que la implementaci\'on del scheduler \textit{Round-Robin} siguiendo algunas aclaraciones. EOM
 \end{homeworkProblem}
 
 \clearpage
 \begin{homeworkProblem}[Ejercicio 5]
-    Work in progress...
+    La consigna del quinto ejercicio de este trabajo empieza de la siguiente forma:
+    \begin{displayquote}
+Dise\~ne un lote con 3 tareas de tipo \textbf{TaskCPU} de 50 ciclos y 2 de tipo \textbf{TaskConsola} con 5 llamadas blooqueantes de 3 ciclos de duraci\'on cada una. Ejecutar y graficar la simulaci\'on utilizando el scheduler \textit{Round-Robin} con quantum 2, 10 y 50.
+    \end{displayquote}
+Figura 5 corresponde al gr\'afico de la simulaci\'on hecha utilizando un quantum de 2. Figura 6 y Figura 7 corresponden a los gr\'aficos de las simulaciones hechas con 10 y 50 quantums respectivamente. \\
+        \begin{figure}[h]
+            \includegraphics[width=1\textwidth]{ej5-2q-1c}
+            \caption{}
+        \end{figure} \\
+        \begin{figure}[h]
+            \includegraphics[width=1\textwidth]{ej5-10q-1c}
+            \caption{}
+        \end{figure} \\
+        \begin{figure}[h]
+            \includegraphics[width=1\textwidth]{ej5-50q-1c}
+            \caption{}
+        \end{figure} \\
+    
+    \textbf{Latencia, waiting time y tiempo total de ejecuci\'on} \\
+    Sigamos adelante con la segunda parte del ejercicio.
+        \begin{displayquote}
+Con un cambio de contexto de 2 ciclos y un s\'olo n\'ucleo calcular la \textit{latencia}, el \textit{waiting time} y el tiempo total de ejecuci\'on de las cinco tareas para cada quantum.
+    \end{displayquote}
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{c|c|c|c|c|c|c|c}
+           & Tarea 0 & Tarea 1 & Tarea 2 & Tarea 3 & Tarea 4 & Total   & Promedio \\
+\hline           
+Quantum 2  & 2       & 6       & 10      & 14      & 17      & 49      & 9,8      \\
+\hline
+Quantum 10 & 2       & 14      & 26      & 38      & 41      & 121     & 24,2      \\
+\hline
+Quantum 50 & 2       & 54      & 106     & 158     & 161     & 481     & 96,2    
+\end{tabular}
+\caption{Latencia}
+\end{table}
+\begin{table}[h]
+\centering
+\begin{tabular}{c|c|c|c|c|c|c|c}
+           & Tarea 0 & Tarea 1 & Tarea 2 & Tarea 3 & Tarea 4 & Total   & Promedio \\
+\hline
+Quantum 2  & 289     & 292     & 295     & 84      & 87      & 1047      & 209,4      \\
+\hline
+Quantum 10 & 162     & 165     & 168     & 201     & 204      & 900      & 180      \\
+\hline
+Quantum 50 & 114     & 117     & 120     & 177     & 180      & 708      & 141      \\
+\end{tabular}
+\caption{Waiting time}
+\end{table}
+\begin{table}[h]
+\centering
+\begin{tabular}{c|c|c|c|c|c|c|c}
+           & Tarea 0 & Tarea 1 & Tarea 2 & Tarea 3 & Tarea 4 & Total   & Promedio \\
+\hline
+Quantum 2  & 339     & 342     & 345     & 105     & 108      & 1239      & 247,8      \\
+\hline
+Quantum 10 & 213     & 216     & 219     & 222     & 225      & 1095      & 219      \\
+\hline
+Quantum 50 & 165     & 168     & 170     & 198     & 201      & 902      & 180,4      \\
+\end{tabular}
+\caption{Tiempo total de ejecuci\'on}
+\end{table}
+
+
+Finalmente:
+\begin{displayquote}
+\mbox{¿}En cu\'al es mejor cada uno? \mbox{¿}Por qu\'e ocurre esto?
+    \end{displayquote}
+Afinemos el l\'apiz a partir de los n\'umeros en las tres tablas anteriores y tratemos de entender qu\'e ocurre en cada caso. Empezamos por la latencia, que parece el m\'as evidente. Como podemos ver (Cuadro 1), la relaci\'on es lineal: a menor quantum, menor latencia. Parece razonable este comportamiento, basta pensar en qu\'e entendemos cuando hablamos de \textit{quantum}: un menor quantum es en definitiva un menor tiempo de CPU para cada proceso en cada una de las \textit{iteraciones}. Pero esto no es otra cosa que, dado un proceso cualquiera, (con un costo de cambio de contexto fijo para hacer las comparaciones, como es el caso) menor tiempo de espera hasta ser \textit{atendido} por primer vez, ya que todos los procesos que lo precedean en el orden de obtenci\'on de recursos de ejecuci\'on \textit{tardan} menos. En otra forma de exponerlo, consideremos un proceso cualquiera $$p_{i}$$Sea i su \textit{turno}, es decir, el orden asignado por el scheduler para ser atendido. Hay \textit{i} - 1 procesos que tendr\'an CPU antes que aquel que consideramos. Luego, su latencia estar\'a dada por la suma de \textit{i} - 1 cambios de contexto (esto es un n\'umero fijo, seg\'un mencionamos) m\'as a lo sumo \textit{i} - 1 veces el quantum definido. Es por ello que disminuir el quantum disminuir\'a el segundo sumando, resultando en una menor latencia. \\
+Los an\'alisis respecto del waiting time y el tiempo total de ejecuci\'on son similares, ya que (aunque bien podr\'iamos no saberlo de forma anticipada) el tiempo de ejecuci\'on que necesitan los procesos definidos es siempre el mismo. Al cambiar el quantum que se asigna, lo que hacemos es modificar la forma (temporal) de atender esas necesidades de procesamiento, no as\'i el tiempo de procesamiento que le llevar\'a a los procesos concluir su tarea. Lo que puede concluirse viendo los resultados (Cuadro 2 y Cuadro 3) es que a mayor quantum, menor waiting time y tiempo total de ejecuci\'on. Una vez m\'as, este resultado es razonable. Considerando fuertemente la aclaraci\'on respecto de la nula variaci\'on del tiempo efectivo de procesamiento, lo que var\'ia entonces es el tiempo que un proceso espera estando listo. Este tiempo de espera es una suma de 2 valores: por un lado, el \textit{tiempo efectivo de espera}, es decir, el tiempo que efectivamente un proceso espera que otro proceso libere CPU, y costo de los cambios de contexto, por otro. Como el \textit{tiempo efectivo de espera} es inevitable, dada la limitante en los recursos de procesamiento, lo \'unico que puede reducirse es el costo de los cambios de contexto. \mbox{¿}C\'omo reducimos el costo de los cambios de contexto? Cambiando de contexto lo menos posible. \mbox{¿}C\'omo cambiamos de contexto lo menos posible? Asignando un quantum mayor, seg\'un se verifica en los resultados.
+
+
+
 \end{homeworkProblem}
 
 \clearpage
@@ -222,7 +317,6 @@ No son muchas las cosas a revisar, entre ellas: \\
 
 \clearpage
 \begin{homeworkProblem}[Ejercicio 8]
-    Work in progress...
     \input{ej8.tex}
 \end{homeworkProblem}
 
