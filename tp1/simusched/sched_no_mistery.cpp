@@ -6,14 +6,14 @@
 
 using namespace std;
 
-SchedNoMistery::SchedNoMistery(vector<int> argn) { 
+SchedNoMistery::SchedNoMistery(vector<int> argn) {
 	quantum_cola = argn;
 	colas_len = argn.size();
-	colas = new queue<int>[colas_len];
+	colas = vector< queue<int> >(colas_len);
 }
 
 SchedNoMistery::~SchedNoMistery() {
-	delete []colas;
+	// :(
 }
 
 void SchedNoMistery::load(int pid) {
@@ -40,7 +40,7 @@ int SchedNoMistery::proxima() {
 	return IDLE_TASK;
 }
 
-int SchedNoMistery::tick(int cpu, const enum Motivo m) {  
+int SchedNoMistery::tick(int cpu, const enum Motivo m) {
 	// La tarea actual es la que se está corriendo
 	int actual = current_pid(cpu);
 

@@ -12,11 +12,11 @@ class SchedNoMistery : public SchedBase {
     ~SchedNoMistery();
     virtual void load(int pid);
     virtual void unblock(int pid);
-    virtual int tick(int cpu, const enum Motivo m);  
-    virtual int proxima();  
+    virtual int tick(int cpu, const enum Motivo m);
+    virtual int proxima();
 
   private:
-	std::queue<int>* colas;
+	std::vector<std::queue<int> > colas;
 	int colas_len;
 	int quantum; // tiempo restante del cpu
 	std::vector<int> quantum_cola;	// duración total del quantum
