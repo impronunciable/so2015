@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <queue>
+#include <map>
 #include "basesched.h"
 
 class SchedNoMistery : public SchedBase {
@@ -11,16 +12,15 @@ class SchedNoMistery : public SchedBase {
     virtual void load(int pid);
     virtual void unblock(int pid);
     virtual int tick(int cpu, const enum Motivo m);  
-    virtual int nextTask();  
+    virtual int proxima();  
 
   private:
-	std::queue<int> tareas;
-	std::queue<int> desbloqueadas;
-	std::queue<int> entradas;
+	std::queue<int>* colas;
+	int colas_len;
+	std::vector<int> bloqueadas;
 	int quantum; // tiempo restante del cpu
-	std::vector<int> maxQuantums;	// duración total del quantum
-	std::map<int, int> corridas; // cantidad de ejecuciones de una tarea
-	void setQuantum(int pid);
+	std::vector<int> quantum_cola;	// duración total del quantum
+	std::map<int, int> tareas; // cantidad de ejecuciones de una tarea
 };
 
 #endif

@@ -1,66 +1,65 @@
 #include <vector>
-#include <map>
+#include <array>
 #include <iostream>
 #include "sched_no_mistery.h"
 #include "basesched.h"
 
 using namespace std;
 
-SchedNoMistery::SchedNoMistery(vector<int> argn) {  
-	maxQuantums = argn;
-	quantum = maxQuantums[0];
+SchedNoMistery::SchedNoMistery(vector<int> argn) { 
+	quantum_cola = argn;
+	colas_len = argn.size();
+	colas = new queue<int>[colas_len];
 }
 
 void SchedNoMistery::load(int pid) {
-	entradas.push(pid);
-	corridas.insert(make_pair(pid, 0));
+	colas[0].push(pid);
+	tareas.insert(make_pair(pid, 0));
 }
 
 void SchedNoMistery::unblock(int pid) {
-	desbloqueadas.push(pid);
+	for(int i = 0; i < bloqueadas.size(); i++) {
+		if(bloqueadas[i] == pid) {
+			if(tareas[pid] > 0) {
+				tareas[pid]--;
+			}
+			colas[tareas[pid]].push(pid);
+
+			vector<int>::iterator it = bloqueadas.begin() + i;
+			bloqueadas.erase(it);
+			break;
+		}
+	}
 }
 
-void SchedNoMistery::setQuantum(int pid) {
-	uint procCorridas = corridas[pid];
-	if(procCorridas < maxQuantums.size()) {
-		quantum = maxQuantums[procCorridas];
-	} else {
-		quantum = maxQuantums[maxQuantums.size() - 1];
+int SchedNoMistery::proxima() {
+	for(int i = 0; i < colas_len; i++) {
+		if(!colas[i].empty()) {
+			int tarea = colas[i].front();
+			colas[i].pop();
+			quantum = quantum_cola[i];
+			return tarea;
+		}
 	}
-	corridas[pid]++;
-}
 
-int SchedNoMistery::nextTask() {
-	int pid;
-	if(desbloqueadas.empty() && tareas.empty() && entradas.empty()) return IDLE_TASK;
 
-	if(!desbloqueadas.empty()) {
-		pid = desbloqueadas.front();
-		desbloqueadas.pop();
-    } else if(!entradas.empty()) {
-		pid = entradas.front();
-		entradas.pop();
-	} else {
-		pid = tareas.front();
-		tareas.pop();
-	}
-	setQuantum(pid);
-	return pid;
+	return IDLE_TASK;
 }
 
 int SchedNoMistery::tick(int cpu, const enum Motivo m) {  
+	// La tarea actual es la que se está corriendo
+	int actual = current_pid(cpu);
+
 	switch(m){
 	case TICK: {
-		// La tarea actual es la que se está corriendo
-		int actual = current_pid(cpu);
-
 		if (actual == IDLE_TASK){
-			return nextTask();
+			return proxima();
 		} else {
 			quantum -= 1;
 			if (quantum <= 0){
-				tareas.push(actual);
-				return nextTask();
+				tareas[actual] = tareas[actual] >= colas_len - 1 ? colas_len - 1 : tareas[actual] + 1;
+				colas[tareas[actual]].push(actual);
+				return proxima();
 			} else {
 				return actual;
 			}
@@ -68,8 +67,9 @@ int SchedNoMistery::tick(int cpu, const enum Motivo m) {
 	}
 	break;
 	case BLOCK:
+		bloqueadas.push_back(actual);
 	case EXIT:
-	return nextTask();
+	return proxima();
 	break;
 	default:
 	return IDLE_TASK;
