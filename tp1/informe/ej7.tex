@@ -28,10 +28,63 @@ Pensamos inicialmente en usar un struct para guardar información del proceso pe
 
 \textbf{Lotes de tareas de experimentación}
 
-WIP
+\bigskip
 
--El lote ej-7-1 (ej7/misterio-1.png) nos muestra que se hace un round robin y que las tareas desbloqueadas `ganan` prioridad
+\textbf{Lote 1}
 
--El lote ej-7-2 (ej7/misterio-2.png) nos muestra que hay 1 cola de prioridad por cada parametro
+*3 TaskCPU 20
+*2 TaskConsola 5 3 3
 
--El lote ej-7-3 (ej7/misterio-3.png) nos muestra que al empezar una tarea tiene mayor prioridad que si ya estaba corriendo
+\begin{figure}[h]
+    \includegraphics[width=1\textwidth]{ej7-lote1}
+    \caption{Ejecución Lote 1}
+    \label{Lote1}
+\end{figure}
+
+Lo que nos dice la figura \ref{Lote1} es que este scheduler hace round-robin sobre los procesos que ejecuta y además prioriza las tareas desbloqueadas por sobre el resto. También vemos que los quantum van increciendo hasta 3, correspondiendose con los parámetros pasados al scheduler `1 2 3 3 3 3 3 3`. Esto habla de la necesidad de al menos 2 colas de prioridad para manejar los niveles de prioridad para los casos de desbloqueo y la nacesidad de utilizar un algoritmo de round-robin para el intercambio de tareas.
+
+\bigskip
+
+\textbf{Lote 2}
+
+TaskAlterno 3 22 1 3 3
+@1
+TaskAlterno 7 10 3
+
+@20
+TaskCPU 5
+@22
+TaskCPU 5
+
+@30
+TaskCPU 5
+@32
+TaskCPU 5
+
+\begin{figure}[h]
+    \includegraphics[width=1\textwidth]{ej7-lote2}
+    \caption{Ejecución Lote 2}
+    \label{Lote2}
+\end{figure}
+
+Un punto importante en la determinación del comportamiento del SchedMistery está relacionada con la inicialización de tareas. Lo que determinamos a través de la ejecución de este lote, y el posterior análisis de la figura \ref{Lote2}, es que los procesos inicializan con la mayor prioridad posible. También comprobamos que la suba de prioridad del desbloqueo se complementa con el de incialización de tareas.
+
+\bigskip
+
+\textbf{Lote 3}
+
+*2 TaskCPU 10
+@5
+*2 TaskCPU 10
+@10
+*2 TaskCPU 10
+
+\begin{figure}[h]
+    \includegraphics[width=1\textwidth]{ej7-lote3}
+    \caption{Ejecución Lote 3}
+    \label{Lote3}
+\end{figure}
+
+Lo que determina este lote, que se podía intuir en los lotes anteriores, es que las colas de prioridad tienen un quantum que se corresponde con los parámetros pasados al scheduler y, agregando a lo conocido por el Lote 1, por cada parámetro existe una cola de prioridad donde los procesos se van encolando. Es así que logramos comprender como funciona el Scheduler.
+
+Creamos una batería de lotes de tests para contemplar otros casos posibles y logramos el mismo comportamiento con nuestra implementación de SchedNoMystery que el de SchedMistery. Sin embargo los 3 casos más emblemáticos son los anteriormente detallados, cumpliendo con la consigna de hablar de los 3 lotes más significativos.
