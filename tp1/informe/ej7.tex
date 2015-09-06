@@ -1,0 +1,37 @@
+Este ejercicio parte de la observación del comportamiento de un scheduler llamado SchedMistery, del cual poseemos solamente una versión compilada y no su código fuente. Se plantea entonces entender su comportamiento y generar un scheduler SchedNoMistery que lo imite.
+
+\bigskip
+
+\textbf{Descripción del comportamiento observado}
+
+Las observaciones de múltiples lotes, que serán detallados más adelante en la sección, nos llevó a entender las decisiones tomadas por el SchedMistery.
+
+Este scheduler toma como parámetros 1 o más enteros. La cantidad de parámetros indica la cantidad de colas de prioridad para los procesos y cada parámetro
+referencia el quantum de los procesos en cada cola de prioridad.
+
+Nos encontramos frente a un round-robin de múltiples colas con prioridad. La forma en que cambian de prioridad los procesos se da en los siguientes casos:
+
+- Cuando una tarea se desbloquea entonces sube un nivel de prioridad.
+- Cuando una tarea pierde su quantum baja un nivel de prioridad.
+
+
+\textbf{Implementación}
+
+El comportamiento del scheduler queda descripto en el apartado anterior con lo cual nos vamos a limitar a explicitar las estructuras de datos intervinientes.
+
+Para representar las múltiples colas utilizamos un vector de colas, cuya cantidad de elementos se corresponde con la cantidad de argumentos recibidos por el scheduler.
+A la vez, un vector de enteros guarda un entero por cada cola de prioridad, determinando el quantum de los procesos que la contienen.
+Resultó cómodo utilizar un mapa de entero a entero que, para cada pid devuelve la prioridad del proceso correspondiente.
+Pensamos inicialmente en usar un struct para guardar información del proceso pero el mapa fue más efectivo y requiere menos cuidado a la hora de modificarse.
+
+\bigskip
+
+\textbf{Lotes de tareas de experimentación}
+
+WIP
+
+-El lote ej-7-1 (ej7/misterio-1.png) nos muestra que se hace un round robin y que las tareas desbloqueadas `ganan` prioridad
+
+-El lote ej-7-2 (ej7/misterio-2.png) nos muestra que hay 1 cola de prioridad por cada parametro
+
+-El lote ej-7-3 (ej7/misterio-3.png) nos muestra que al empezar una tarea tiene mayor prioridad que si ya estaba corriendo

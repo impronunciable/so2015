@@ -1,8 +1,0 @@
-
-Ejercicio 7
-
--El lote ej-7-1 (ej7/misterio-1.png) nos muestra que se hace un round robin y que las tareas desbloqueadas `ganan` prioridad
-
--El lote ej-7-2 (ej7/misterio-2.png) nos muestra que hay 1 cola de prioridad por cada parametro
-
--El lote ej-7-3 (ej7/misterio-3.png) nos muestra que al empezar una tarea tiene mayor prioridad que si ya estaba corriendo

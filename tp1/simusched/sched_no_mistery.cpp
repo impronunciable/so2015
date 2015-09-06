@@ -13,7 +13,6 @@ SchedNoMistery::SchedNoMistery(vector<int> argn) {
 }
 
 SchedNoMistery::~SchedNoMistery() {
-	// :(
 }
 
 void SchedNoMistery::load(int pid) {
