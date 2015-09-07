@@ -1,15 +1,14 @@
-Este ejercicio parte de la observación del comportamiento de un scheduler llamado SchedMistery, del cual poseemos solamente una versión compilada y no su código fuente. Se plantea entonces entender su comportamiento y generar un scheduler SchedNoMistery que lo imite.
+Este ejercicio parte de la observación del comportamiento de un scheduler llamado SchedMistery, del cual poseemos solamente una versión compilada y no su código fuente. Se nos plantea entender su comportamiento y generar un scheduler SchedNoMistery que lo imite.
 
 \bigskip
 
 \textbf{Descripción del comportamiento observado}
 
-Las observaciones de múltiples lotes, que serán detallados más adelante en la sección, nos llevó a entender las decisiones tomadas por el SchedMistery.
+Las observaciones de múltiples lotes (que serán detallados más adelante en la sección) nos llevaron a entender las decisiones tomadas por el SchedMistery.
 
-Este scheduler toma como parámetros 1 o más enteros. La cantidad de parámetros indica la cantidad de colas de prioridad para los procesos y cada parámetro
-referencia el quantum de los procesos en cada cola de prioridad.
+Este scheduler toma 1 o más enteros como parámetros. La cantidad de parámetros indica la cantidad de colas de prioridad para los procesos y cada parámetro referencia el quantum de los procesos en cada cola de prioridad.
 
-Nos encontramos frente a un round-robin de múltiples colas con prioridad. La forma en que cambian de prioridad los procesos se da en los siguientes casos:
+Nos encontramos frente a un Round-Robin de múltiples colas con prioridad. La forma en que cambian de prioridad los procesos se da en los siguientes casos:
 
 - Cuando una tarea se desbloquea entonces sube un nivel de prioridad.
 - Cuando una tarea pierde su quantum baja un nivel de prioridad.
@@ -21,8 +20,8 @@ El comportamiento del scheduler queda descripto en el apartado anterior con lo c
 
 Para representar las múltiples colas utilizamos un vector de colas, cuya cantidad de elementos se corresponde con la cantidad de argumentos recibidos por el scheduler.
 A la vez, un vector de enteros guarda un entero por cada cola de prioridad, determinando el quantum de los procesos que la contienen.
-Resultó cómodo utilizar un mapa de entero a entero que, para cada pid devuelve la prioridad del proceso correspondiente.
-Pensamos inicialmente en usar un struct para guardar información del proceso pero el mapa fue más efectivo y requiere menos cuidado a la hora de modificarse.
+Nos resultó cómodo utilizar un mapa de entero a entero que, para cada pid devuelve la prioridad del proceso correspondiente.
+Pensamos inicialmente en usar un struct para guardar información del proceso, pero el mapa fue más efectivo adem\'as de requerir menos cuidado a la hora de modificarse.
 
 \bigskip
 
@@ -30,9 +29,8 @@ Pensamos inicialmente en usar un struct para guardar información del proceso pe
 
 \bigskip
 
-\textbf{Lote 1}
-
-*3 TaskCPU 20
+\textbf{Lote 1} \\
+*3 TaskCPU 20 \\
 *2 TaskConsola 5 3 3
 
 \begin{figure}[h]
@@ -41,25 +39,22 @@ Pensamos inicialmente en usar un struct para guardar información del proceso pe
     \label{Lote1}
 \end{figure}
 
-Lo que nos dice la figura \ref{Lote1} es que este scheduler hace round-robin sobre los procesos que ejecuta y además prioriza las tareas desbloqueadas por sobre el resto. También vemos que los quantum van increciendo hasta 3, correspondiendose con los parámetros pasados al scheduler `1 2 3 3 3 3 3 3`. Esto habla de la necesidad de al menos 2 colas de prioridad para manejar los niveles de prioridad para los casos de desbloqueo y la nacesidad de utilizar un algoritmo de round-robin para el intercambio de tareas.
+Lo que nos dice la figura \ref{Lote1} es que este scheduler hace Round-Robin sobre los procesos que ejecuta y además prioriza las tareas desbloqueadas por sobre el resto. También vemos que los quantum van increciendo hasta 3, correspondiendose con los parámetros pasados al scheduler `1 2 3 3 3 3 3 3`. Esto habla de la necesidad de al menos 2 colas de prioridad para manejar los niveles de prioridad para los casos de desbloqueo y la nacesidad de utilizar un algoritmo de Round-Robin para el intercambio de tareas.
 
 \bigskip
 
-\textbf{Lote 2}
-
-TaskAlterno 3 22 1 3 3
-@1
-TaskAlterno 7 10 3
-
-@20
-TaskCPU 5
-@22
-TaskCPU 5
-
-@30
-TaskCPU 5
-@32
-TaskCPU 5
+\textbf{Lote 2} \\
+TaskAlterno 3 22 1 3 3 \\
+@1 \\
+TaskAlterno 7 10 3 \\
+@20 \\
+TaskCPU 5 \\
+@22 \\
+TaskCPU 5 \\
+@30 \\
+TaskCPU 5 \\
+@32 \\
+TaskCPU 5 \\
 
 \begin{figure}[h]
     \includegraphics[width=1\textwidth]{ej7-lote2}
@@ -71,13 +66,12 @@ Un punto importante en la determinación del comportamiento del SchedMistery est
 
 \bigskip
 
-\textbf{Lote 3}
-
-*2 TaskCPU 10
-@5
-*2 TaskCPU 10
-@10
-*2 TaskCPU 10
+\textbf{Lote 3} \\
+*2 TaskCPU 10 \\
+@5 \\
+*2 TaskCPU 10 \\
+@10 \\
+*2 TaskCPU 10 \\
 
 \begin{figure}[h]
     \includegraphics[width=1\textwidth]{ej7-lote3}
