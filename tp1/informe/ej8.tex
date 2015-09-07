@@ -21,12 +21,11 @@ Un escenario en el que este scheduler es peor en contraposición con el Round-Ro
 
 Para ejemplificar esto, construimos un lote de 7 tareas "TaskCPU", alternadas en tiempos de 1 y 8 ciclos. A continuación, se presenta un gráfico de tal lote que simula la situación planteada:
 
-\begin{figure}[h]
-    \includegraphics[width=1\textwidth]{ej8MaloRR2}
-    \caption{Ejecución en Round-Robin 2}
-    \label{RR2Malo}
-\end{figure}
-
+\clearpage
+    \begin{figure}[h]
+        \includegraphics[width=1\textwidth]{ej8MaloRR2}
+        \caption{Ejecución en Round-Robin 2}
+    \end{figure}
 Como se muestra en la figura \ref{RR2Malo}, podemos notar lo antes mencionado. Con este nuevo scheduler, a partir del instante 16, el CPU 0, ya no posee ninguna tarea a ejecutar, siendo que terminaron todas las que fueron asignadas al mismo al momento de carga. Por lo tanto, queda en IDLE, mientras que el CPU 1 ejecuta alternadamente los 3 procesos restantes.
 
 En la siguiente tabla mostramos distintas métricas, correspondientes a esta simulación:
