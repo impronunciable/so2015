@@ -8,7 +8,7 @@ Las observaciones de múltiples lotes (que serán detallados más adelante en la
 
 Este scheduler toma 1 o más enteros como parámetros. La cantidad de parámetros indica la cantidad de colas de prioridad para los procesos y cada parámetro referencia el quantum de los procesos en cada cola de prioridad.
 
-Nos encontramos frente a un Round-Robin de múltiples colas con prioridad. La forma en que cambian de prioridad los procesos se da en los siguientes casos:
+Nos encontramos frente a un Round-Robin de múltiples colas con prioridad. La forma en que cambian de prioridad los procesos se da en los siguientes casos: \\
 
 - Cuando una tarea se desbloquea entonces sube un nivel de prioridad.
 - Cuando una tarea pierde su quantum baja un nivel de prioridad.

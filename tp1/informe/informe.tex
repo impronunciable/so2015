@@ -143,7 +143,7 @@
     En este primer ejercicio se nos pide programar una tarea interactiva que realice  \textit{n} llamadas bloqueantes de una duraci\'on al azar comprendida entre dos de los par\'ametros que la tarea recibe (el tercer par\'ametro es \textit{n}, es decir, la mencionada cantidad de llamadas bloqueantes).\\
 
 \textbf{Implementaci\'on} \\
-        Para ello empezamos por registrar la tarea en la funci\'on provista \textit{tasks\_init} seg\'un se indica. Luego implementamos la funci\'on reci\'en registrada vali\'endonos de la funci\'on \textit{uso\_IO} que resulta en una llamada bloqueante de \textit{t} ciclos de reloj en completar (donde \textit{t} es el \'unico par\'ametro que \textit{uso\_IO} recibe. Falta \'unicamente mencionar que, para definir un tiempo al azar que est\'e comprendido entre los valores solicitados, realizamos una suma que adicione el m\'inimo necesario a un valor aleatroio comprendido entre la diferencia entre el m\'inimo (\textit{bmin}) y el m\'aximo (\textit{bmax}) recibidos:
+        Para ello empezamos por registrar la tarea en la funci\'on provista \textit{tasks\_init} seg\'un se indica. Luego implementamos la funci\'on reci\'en registrada vali\'endonos de la funci\'on \textit{uso\_IO} que resulta en una llamada bloqueante de \textit{t} ciclos de reloj en completar (donde \textit{t} es el \'unico par\'ametro que \textit{uso\_IO} recibe). Falta \'unicamente mencionar que, para definir un tiempo al azar que est\'e comprendido entre los valores solicitados, realizamos una suma que adicione el m\'inimo necesario a un valor aleatroio comprendido entre la diferencia entre el m\'inimo (\textit{bmin}) y el m\'aximo (\textit{bmax}) recibidos:
             \begin{center}
             bmin + (rand() \% ((bmax + 1) - bmin))
             \end{center} 
@@ -320,7 +320,7 @@ De m\'as est\'a seguramente aclarar que no ser\'a esa traducci\'on nuestro punto
 
 \clearpage
 \begin{homeworkProblem}[Ejercicio 7]
-    Work in progress...
+    \input{ej7.tex}
 \end{homeworkProblem}
 
 \clearpage
