@@ -89,7 +89,7 @@ int main(int argc, const char* argv[]) {
         if ((socketfd_cliente = accept(socket_servidor, (struct sockaddr*) &remoto, (socklen_t*) &socket_size)) == -1)
             cerr << "Error al aceptar conexion" << endl;
         else {
-            close(socket_servidor);
+            //close(socket_servidor);
             atendedor_de_jugador(socketfd_cliente);
         }
     }
