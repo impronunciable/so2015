@@ -90,7 +90,7 @@ int main(int argc, const char* argv[]) {
             cerr << "Error al aceptar conexion" << endl;
         else {
 			pthread_t thread;
-			int rc = pthread_create(&thread, NULL, atendedor_de_jugador, &socketfd_cliente);
+			int rc = pthread_create(&thread, NULL, atendedor_de_jugador, (void*) &socketfd_cliente);
 			if (rc) {
             	cerr << "Error al crear thread" << endl;
 				// FIXME cerrar conexion con usuario
@@ -178,6 +178,7 @@ void *atendedor_de_jugador(void *socket_fd_cliente) {
             terminar_servidor_de_jugador(socket_fd, palabra_actual);
         }
     }
+    return NULL;
 }
 
 
