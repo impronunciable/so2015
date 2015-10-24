@@ -1,7 +1,7 @@
-#ifndef Backend_mono_h
-#define Backend_mono_h
+#ifndef Backend_multi_h
+#define Backend_multi_h
 
-
+#include <pthread.h>
 #include "Encabezado.h"
 #include "Casillero.h"
 #include "Enviar_recibir.h"
@@ -9,7 +9,7 @@
 using namespace std;
 bool cargar_int(const char* numero, unsigned int& n);
 
-void atendedor_de_jugador(int socket_fd);
+void *atendedor_de_jugador(void *socket_fd);
 
 
 // mensajes recibidos por el server

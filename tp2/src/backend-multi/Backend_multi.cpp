@@ -1,4 +1,4 @@
-		#include "Backend_multi.h"
+#include "Backend_multi.h"
 
 
 using namespace std;
@@ -16,46 +16,46 @@ unsigned int alto = -1;
 
 
 bool cargar_int(const char* numero, unsigned int& n) {
-    char *eptr;
-    n = static_cast<unsigned int>(strtol(numero, &eptr, 10));
-    if(*eptr != '\0') {
-        cerr << "error: " << numero << " no es un número: " << endl;
-        return false;
-    }
-    return true;
+	char *eptr;
+	n = static_cast<unsigned int>(strtol(numero, &eptr, 10));
+	if(*eptr != '\0') {
+		cerr << "error: " << numero << " no es un número: " << endl;
+		return false;
+	}
+	return true;
 }
 
 int main(int argc, const char* argv[]) {
-    // manejo la señal SIGINT para poder cerrar el socket cuando cierra el programa
-    signal(SIGINT, cerrar_servidor);
+	// manejo la señal SIGINT para poder cerrar el socket cuando cierra el programa
+	signal(SIGINT, cerrar_servidor);
 
-    // parsear argumentos
-    if (argc < 3) {
-        cerr << "Faltan argumentos, la forma de uso es:" << endl <<
-        argv[0] << " N M" << endl << "N = ancho del tablero , M = alto del tablero" << endl;
-        return 3;
-    }
-    else {
-        if (!cargar_int(argv[1], ancho)) {
-            cerr << argv[1] << " debe ser un número" << endl;
-            return 5;
-        }
-        if (!cargar_int(argv[2], alto)) {
-            cerr << argv[2] << " debe ser un número" << endl;
-            return 5;
-        }
-    }
+	// parsear argumentos
+	if (argc < 3) {
+		cerr << "Faltan argumentos, la forma de uso es:" << endl <<
+		argv[0] << " N M" << endl << "N = ancho del tablero , M = alto del tablero" << endl;
+		return 3;
+	}
+	else {
+		if (!cargar_int(argv[1], ancho)) {
+			cerr << argv[1] << " debe ser un número" << endl;
+			return 5;
+		}
+		if (!cargar_int(argv[2], alto)) {
+			cerr << argv[2] << " debe ser un número" << endl;
+			return 5;
+		}
+	}
 
-    // inicializar ambos tableros, se accede como tablero[fila][columna]
-    tablero_letras = vector<vector<char> >(alto);
-    for (unsigned int i = 0; i < alto; ++i) {
-        tablero_letras[i] = vector<char>(ancho, VACIO);
-    }
+	// inicializar ambos tableros, se accede como tablero[fila][columna]
+	tablero_letras = vector<vector<char> >(alto);
+	for (unsigned int i = 0; i < alto; ++i) {
+		tablero_letras[i] = vector<char>(ancho, VACIO);
+	}
 
-    tablero_palabras = vector<vector<char> >(alto);
-    for (unsigned int i = 0; i < alto; ++i) {
-        tablero_palabras[i] = vector<char>(ancho, VACIO);
-    }
+	tablero_palabras = vector<vector<char> >(alto);
+	for (unsigned int i = 0; i < alto; ++i) {
+		tablero_palabras[i] = vector<char>(ancho, VACIO);
+	}
 
     int socketfd_cliente, socket_size;
     struct sockaddr_in local, remoto;
@@ -89,8 +89,12 @@ int main(int argc, const char* argv[]) {
         if ((socketfd_cliente = accept(socket_servidor, (struct sockaddr*) &remoto, (socklen_t*) &socket_size)) == -1)
             cerr << "Error al aceptar conexion" << endl;
         else {
-            //close(socket_servidor);
-            atendedor_de_jugador(socketfd_cliente);
+			pthread_t thread;
+			int rc = pthread_create(&thread, NULL, atendedor_de_jugador, &socketfd_cliente);
+			if (rc) {
+            	cerr << "Error al crear thread" << endl;
+				// FIXME cerrar conexion con usuario
+			}
         }
     }
 
@@ -99,8 +103,9 @@ int main(int argc, const char* argv[]) {
 }
 
 
-void atendedor_de_jugador(int socket_fd) {
+void *atendedor_de_jugador(void *socket_fd_cliente) {
     // variables locales del jugador
+	int socket_fd = *((int *)socket_fd_cliente);
     char nombre_jugador[21];
     list<Casillero> palabra_actual; // lista de letras de la palabra aún no confirmada
 
@@ -280,7 +285,8 @@ void cerrar_servidor(int signal) {
     cout << "¡Adiós mundo cruel!" << endl;
     if (socket_servidor != -1)
         close(socket_servidor);
-    exit(EXIT_SUCCESS);
+
+	pthread_exit(NULL);	
 }
 
 void terminar_servidor_de_jugador(int socket_fd, list<Casillero>& palabra_actual) {
@@ -290,6 +296,7 @@ void terminar_servidor_de_jugador(int socket_fd, list<Casillero>& palabra_actual
 
     quitar_letras(palabra_actual);
 
+	pthread_exit(NULL);
     exit(-1);
 }
 
