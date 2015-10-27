@@ -54,14 +54,14 @@ int main(int argc, const char* argv[]) {
 	tablero_letras_rwlocks= vector<vector<RWLock> >(alto);
 	for (unsigned int i = 0; i < alto; ++i) {
 		tablero_letras[i] = vector<char>(ancho, VACIO);
-		tablero_letras_rwlocks[i] = vector<RWLock>(ancho);
+		tablero_letras_rwlocks[i] = vector<RWLock>(ancho,RWLock());
 	}
 
 	tablero_palabras = vector<vector<char> >(alto);
 	tablero_palabras_rwlocks = vector<vector<RWLock> >(alto);
 	for (unsigned int i = 0; i < alto; ++i) {
 		tablero_palabras[i] = vector<char>(ancho, VACIO);
-		tablero_palabras_rwlocks[i] = vector<RWLock>(ancho);
+		tablero_palabras_rwlocks[i] = vector<RWLock>(ancho,RWLock());
 	}
 
     int socketfd_cliente, socket_size;
