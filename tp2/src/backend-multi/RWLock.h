@@ -11,6 +11,7 @@ class RWLock {
         void wunlock();
 
     private:
+
         /* IMPORTANTE: Se brinda una implementación básica del Read-Write Locks
         que hace uso de la implementación provista por pthreads. Está dada para
         que puedan utilizarla durante la adaptación del backend de mono a multi
@@ -19,7 +20,17 @@ class RWLock {
         implementación de Read-Write Locks utilizando únicamente Variables de
         Condición. */
 
-        pthread_rwlock_t rwlock;
+        //pthread_rwlock_t rwlock;
+
+        //Nuevo
+        int readers;
+        bool writing;
+        pthread_cond_t lock;
+        pthread_mutex_t mutex;
+
+        bool hayEscritor;
+        pthread_mutex_t estaEscribiendo;
+
 };
 
 #endif
