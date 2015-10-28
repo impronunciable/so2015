@@ -1,5 +1,6 @@
 #ifndef RWLock_h
 #define RWLock_h
+#include <iostream>
 
 class RWLock {
     public:
