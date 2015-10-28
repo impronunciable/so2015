@@ -9,23 +9,23 @@ implementación de Read-Write Locks utilizando únicamente Variables de
 Condición. */
 
 RWLock :: RWLock() {
-    /* Cambiar por su implementación */
-    //pthread_rwlock_init(&(this->rwlock),NULL);
 
     readers = 0;
     writing = false;
     pthread_cond_init(&lock, NULL);
     pthread_mutex_init(&mutex, NULL);
-    pthread_mutex_init(&estaEscribiendo, NULL);
-    hayEscritor = false;
+    pthread_mutex_init(&turnstile, NULL);
 }
 
 void RWLock :: rlock() {
     /* Cambiar por su implementación */
     //pthread_rwlock_rdlock(&(this->rwlock));
 
+    pthread_mutex_lock(&turnstile);
+    pthread_mutex_unlock(&turnstile);
+
     pthread_mutex_lock(&mutex);
-    while(hayEscritor || writing){
+    while(writing){
         pthread_cond_wait(&lock, &mutex);
     }
     readers++;
@@ -33,25 +33,19 @@ void RWLock :: rlock() {
 }
 
 void RWLock :: wlock() {
-    /* Cambiar por su implementación */
-    //pthread_rwlock_wrlock(&(this->rwlock));
 
-    pthread_mutex_lock(&estaEscribiendo); //Llegué
+    // Llega un escritor, no pueden pasar más lectores
+    pthread_mutex_lock(&turnstile);
 
     pthread_mutex_lock(&mutex);
-    hayEscritor = true;
-
     while(writing || readers > 0){
         pthread_cond_wait(&lock, &mutex);
     }
     writing = true;
-    // escribir...
     pthread_mutex_unlock(&mutex);
 }
 
 void RWLock :: runlock() {
-    /* Cambiar por su implementación */
-    //pthread_rwlock_unlock(&(this->rwlock));
 
     pthread_mutex_lock(&mutex);
     readers--;
@@ -62,15 +56,11 @@ void RWLock :: runlock() {
 }
 
 void RWLock :: wunlock() {
-    /* Cambiar por su implementación */
-    //pthread_rwlock_unlock(&(this->rwlock));
 
     pthread_mutex_lock(&mutex);
-
     writing = false;
-    hayEscritor = false;
-    pthread_cond_broadcast(&lock); //broadcast para despertar también a readers
-
-    pthread_mutex_unlock(&estaEscribiendo);
+    pthread_cond_broadcast(&lock); // Broadcast para despertar también a readers
+    // Desbloqueo el turnstile, para que pasen lectores/escritores
+    pthread_mutex_unlock(&turnstile);
     pthread_mutex_unlock(&mutex);
 }
