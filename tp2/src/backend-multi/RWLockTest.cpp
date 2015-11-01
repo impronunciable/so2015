@@ -1,117 +1,134 @@
 #include "RWLock.h"
 #include <iostream>
 #include <unistd.h>
+#include <cstdlib>
 
+// Variables comunes
 int recurso1 = 42;
-RWLock* testLoopDeRecurso1;
+RWLock* testLock;
 
-void * testThreadA(void*);
-void * testThreadB(void*);
-void * testThreadC(void*);
-void * testThreadD(void*);
-void * testThreadE(void*);
+// Prototipo de funciones de threads
+void * threadTest(void*);
+
+// struct de parámetros de funciones de threads
+struct testParams {
+    int id;     // id del thread
+    bool type;  // 0 = read, 1 = write
+    int cant;   // Cantidad de lecturas o escrituras
+};
+
+// Prototipos de funciones para tests;
+// Tests de lecturas y escrituras en paralelo
+// crearPrimeroEscritores hace que primero se crean los threads de escritura
+// [No garantiza que estos sean los que empiezan]
+void testGenerico(int cantLecturas, int cantEscrituras, bool crearPrimeroEscritores = false);
 
 int main(int argc, char* argv[]) {
+    std::cout << "Comienzan los tests." << std::endl << std::endl;
 
-    /* Implementar */
-    testLoopDeRecurso1 = new RWLock();
-    pthread_t threadA;
-    pthread_t threadB;
-    pthread_t threadC, threadD, threadE;
+    // Varias lecturas
+    testGenerico(5, 0);
+    // Varias escrituras
+    testGenerico(0, 5);
+    // Igual cantidad de lecturas que escrituras;
+    testGenerico(5, 5);
+    testGenerico(5, 5, 1);
+    // Muchas escrituras
+    testGenerico(1, 10);
+    testGenerico(1, 10, 1);
+    // Muchas lecturas
+    testGenerico(10, 1);
+    testGenerico(10, 1, 1);
 
-    int threadOK;
-    threadOK = pthread_create(&threadA, NULL, testThreadA, NULL);
-    if (threadOK){
-        std::cout << "Error al crear thread A" << std::endl;
-    }
+    // Algunas lecturas, algunas escrituras
+    testGenerico(7, 3);
+    testGenerico(7, 3, 1);
+    testGenerico(3, 7);
+    testGenerico(3, 7, 1);
 
-    threadOK = pthread_create(&threadB, NULL, testThreadB, NULL);
-    if (threadOK){
-        std::cout << "Error al crear thread B" << std::endl;
-    }
-
-    threadOK = pthread_create(&threadC, NULL, testThreadC, NULL);
-    if (threadOK){
-        std::cout << "Error al crear thread C" << std::endl;
-    }
-
-    threadOK = pthread_create(&threadD, NULL, testThreadD, NULL);
-    if (threadOK){
-        std::cout << "Error al crear thread D" << std::endl;
-    }
-
-    threadOK = pthread_create(&threadE, NULL, testThreadE, NULL);
-    if (threadOK){
-        std::cout << "Error al crear thread E" << std::endl;
-    }
-
-    pthread_join(threadA, NULL);
-    pthread_join(threadB, NULL);
-    pthread_join(threadC, NULL);
-
-    delete testLoopDeRecurso1;
-
+    std::cout << "Terminaron todos los tests." << std::endl;
     return 0;
 }
 
+void testGenerico(int cantLecturas, int cantEscrituras, bool crearPrimeroEscritores){
+    std::cout << "----Comienza el test----" << std::endl;
+    // Cantidad de threads en este test
+    const int THREAD_NUM = cantLecturas + cantEscrituras;
 
-void* testThreadA(void*){
-    std::cout << "Empieza Thread A" << std::endl;
-    for (int i = 0; i < 5; ++i){
-        testLoopDeRecurso1->rlock();
-        std::cout << "Leyendo del thread A... " << i << std::endl;
-        std::cout << "thA, recurso1: " << recurso1 << std::endl;
-        testLoopDeRecurso1->runlock();
-        usleep(1);
+    testLock = new RWLock();        // Creamos un nuevo lock
+    pthread_t thread[THREAD_NUM];   // Declaramos todos los threads
+    testParams params[THREAD_NUM];  // Y todos los parámetros de cada threadTest
+
+    std::cout << "Creando " << cantLecturas << " threads de lectura y ";
+    std::cout << cantEscrituras << " threads de escritura." << std::endl;
+
+    // Si creamos primero los escritores, hago un swap
+    if (crearPrimeroEscritores){
+        std::cout << "Primero los de escritura." << std::endl;
+        int buffer = cantLecturas;
+        cantLecturas = cantEscrituras;
+        cantEscrituras = buffer;
     }
-    return NULL;
+
+    // Para separar...
+    std::cout << std::endl;
+
+    // indica código de error si algún thread falla
+    int threadOK;
+    // Crear todos los threads
+    for (int i = 0; i < THREAD_NUM; ++i){
+        std::cout << "Creando thread " << i << std::endl;
+
+        // parámetros
+        params[i].id = i;
+        params[i].type = (i >= cantLecturas) xor crearPrimeroEscritores;
+        params[i].cant = 5;
+
+        // creación
+        threadOK = pthread_create(&thread[i], NULL, threadTest, (void*) &params[i]);
+
+        // chequeo de errores
+        if (threadOK){
+            std::cout << "Error al crear thread " << i << ", con código de error: " << threadOK << std::endl;
+            exit(1); // fallamos :(
+        }
+    }
+
+    // esperar a que todos los threads terminen
+    for (int i = 0; i < THREAD_NUM; ++i){
+        pthread_join(thread[i], NULL);
+    }
+    // eliminar el lock
+    delete testLock;
+    std::cout << "----Termina el test----" << std::endl << std::endl;
 }
 
-void* testThreadB(void*){
-    std::cout << "Empieza Thread B" << std::endl;
-    for (int i = 0; i < 5; ++i){
-        testLoopDeRecurso1->rlock();
-        std::cout << "Leyendo del thread B... " << i << std::endl;
-        std::cout << "thB, recurso1: " << recurso1 << std::endl;
-        testLoopDeRecurso1->runlock();
-        usleep(1);
-    }
-    return NULL;
-}
+void* threadTest(void* args){
+    testParams* myParams = (testParams*) args;
+    int id = myParams->id;
+    bool type = myParams->type;
+    int cant = myParams->cant;
 
+    std::cout << "Empieza el thread " << id << "!" << std::endl;
 
-void* testThreadC(void*){
-    std::cout << "Empieza Thread C" << std::endl;
-    for (int i = 0; i < 5; ++i){
-        testLoopDeRecurso1->wlock();
-        std::cout << "Escribiendo en el thread C... " << i << std::endl;
-        recurso1++;
-        testLoopDeRecurso1->wunlock();
-        usleep(1);
+    if (type == 0){
+        for (int i = 0; i < cant; ++i){
+            testLock->rlock();
+            std::cout << "Leyendo del thread " << id << std::endl;
+            std::cout << "thread " << id <<  ", recurso1: " << recurso1 << std::endl;
+            testLock->runlock();
+            usleep(1);
+        }
+    } else {
+        for (int i = 0; i < cant; ++i){
+            testLock->wlock();
+            std::cout << "Escribiendo en el thread " << id << std::endl;
+            recurso1++;
+            testLock->wunlock();
+            usleep(1);
+        }
     }
-    return NULL;
-}
 
-void* testThreadD(void*){
-    std::cout << "Empieza Thread D" << std::endl;
-    for (int i = 0; i < 5; ++i){
-        testLoopDeRecurso1->wlock();
-        std::cout << "Escribiendo en el thread D... " << i << std::endl;
-        recurso1++;
-        testLoopDeRecurso1->wunlock();
-        usleep(1);
-    }
-    return NULL;
-}
-
-void* testThreadE(void*){
-    std::cout << "Empieza Thread E" << std::endl;
-    for (int i = 0; i < 5; ++i){
-        testLoopDeRecurso1->wlock();
-        std::cout << "Escribiendo en el thread E... " << i << std::endl;
-        recurso1++;
-        testLoopDeRecurso1->wunlock();
-        usleep(1);
-    }
-    return NULL;
+    std::cout << "Termina el thread " << id << std::endl;
+    pthread_exit(NULL);
 }
