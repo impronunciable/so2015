@@ -1,0 +1,4 @@
+\select@language {spanish}
+\contentsline {section}{\numberline {1}Introducci\IeC {\'o}n}{1}{section.1}
+\contentsline {section}{\numberline {2}Read-Write locks}{1}{section.2}
+\contentsline {section}{\numberline {3}Scrabble}{2}{section.3}
