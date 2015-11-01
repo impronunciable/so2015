@@ -1,1 +1,64 @@
-nn
+Implementamos la clase RWLock, la cual nos permite administrar el uso concurrente de algún recurso global por distintos threads. Con la misma podemos tener varios threads leyendo simultáneamente el valor del recurso, siempre que no halla alguno escribiendo, y podemos tener solo uno escribiendo.
+
+Para la misma utilizamos los atributos privados $ readers $, de tipo \textbf{int}, que indica la cantidad de threads que se encuentran actualmente leyendo el recurso, $ writing $, de tipo \textbf{bool}, para saber si  hay algún thread leyendo, $ lock $ de tipo \textbf{pthread_cond_t}, que indica si hay algún escritor o lector utilizando el recurso, $ mutex $ de tipo \textbf{pthread_mutex_t}, asociado a la variable de condición $ lock $, $ turnstile $ de tipo \textbf{pthread_mutex_t}, utilizado para evitar la inanición. 
+
+Se implementaron para la misma las funciones $ rlock() $, $ wlock() $, $ runlock() $, $ wunlock() $. En el siguiente fragmento podemos encontrar el pseudocódigo de las mismas:
+
+\begin{lstlisting}
+RWLock :: RWLock() {
+
+    readers = 0;
+    writing = false;
+    pthread_cond_init(&lock, NULL);
+    pthread_mutex_init(&mutex, NULL);
+    pthread_mutex_init(&turnstile, NULL);
+}
+
+void RWLock :: rlock() {
+    //pthread_rwlock_rdlock(&(this->rwlock));
+    pthread_mutex_lock(&turnstile);
+    pthread_mutex_unlock(&turnstile);
+    pthread_mutex_lock(&mutex);
+    //los lectores se quedan esperando que se termine de escribir
+    while(writing){
+        pthread_cond_wait(&lock, &mutex);
+    }
+    readers++;
+    pthread_mutex_unlock(&mutex);
+}
+
+void RWLock :: wlock() {
+
+    // Llega un escritor, no pueden pasar mas lectores
+    pthread_mutex_lock(&turnstile);
+    pthread_mutex_lock(&mutex);
+    while(writing || readers > 0){
+        pthread_cond_wait(&lock, &mutex);
+    }
+    writing = true;
+    pthread_mutex_unlock(&mutex);
+}
+
+void RWLock :: runlock() {
+    pthread_mutex_lock(&mutex);
+    readers--;
+    if (readers == 0){
+        pthread_cond_signal(&lock);
+    }
+    pthread_mutex_unlock(&mutex);
+}
+
+void RWLock :: wunlock() {
+    pthread_mutex_lock(&mutex);
+    writing = false;
+    pthread_cond_broadcast(&lock); // Broadcast para despertar tambien a readers
+    // Desbloqueo el turnstile, para que pasen lectores/escritores
+    pthread_mutex_unlock(&turnstile);
+    pthread_mutex_unlock(&mutex);
+}
+\end{lstlisting}
+
+
+La primera permite que todos los thread lectores del recurso se queden esperando hasta que el thread que esta escribiendo termine, cuando este último termina se llama a $ wunlock() $, la cual ''despierta'' a todos los los lectores que se encuentren esperando. Esto permite que las condiciones de haber algún lector o algún escritor sean mutuamente excluyentes, lo cual se mantendrá invariante a lo largo de la ejecución. La función $ wlock() $ permite que los thread escritores se queden esperando a que no halla lectores ni escritores, como son mutuamente excluyentes en realidad se queda esperando una sola de estas condiciones. La función $ runlock() $, en caso de que la nueva cantidad de lectores del recurso sea cero, ''despertara'' al escritor esperando que no halla mas lectores. La función $ wunlock() $ ''despertara'' además de a los lectores, a los escritores, para esto utilizamos la función pthread_cond_broadcast(&lock).
+
+Sin embargo en este contexto es posible que un escritor se quede esperando indefinidamente, en caso de que siempre aparezcan nuevos lectores, y entonces nunca $ readers $ llegue a cero. Esto es un caso de inanición, para evitarla se utilizo la variable $ turnstile $ de tipo \textbf{pthread_mutex_unlock}. 

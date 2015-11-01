@@ -25,6 +25,7 @@ void RWLock :: rlock() {
     pthread_mutex_unlock(&turnstile);
 
     pthread_mutex_lock(&mutex);
+    //los lectores se quedan esperando que se termine de escribir
     while(writing){
         pthread_cond_wait(&lock, &mutex);
     }
