@@ -1,0 +1,170 @@
+\documentclass[a4paper]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyhdr}
+%\usepackage{charter}   % tipografía
+\usepackage{graphicx}
+\usepackage{makeidx}
+\usepackage{mathptmx}
+
+\usepackage{float}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{amsfonts}
+\usepackage{sectsty}
+\usepackage{wrapfig}
+\usepackage{listings} % necesario para el resaltado de sintaxis
+\usepackage{caption}
+%%%%%%%%%% Paquete para hacer grafos
+%%% ver link http://www.texample.net/tikz/examples/bridges-of-konigsberg/
+%\usepackage{fullpage}
+%\usepackage{fourier}
+\usepackage{tikz}
+\usetikzlibrary{arrows,%
+                shapes,positioning}
+                
+\thispagestyle{empty}
+%%%%%%%%%% Fin paquete para hacer grafos
+%%%%%%%%%%
+\usepackage{hyperref} % agrega hipervínculos en cada entrada del índice
+\hypersetup{          % (en el pdf)
+    colorlinks=true,
+    linktoc=all,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+\input{codesnippet}
+\input{page.layout}
+\usepackage{underscore}
+\usepackage{caratula}
+\usepackage{url}
+\usepackage{color}
+\usepackage{clrscode3e} % necesario para el pseudocodigo (estilo Cormen)
+
+%\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage{algorithm}[1]
+\usepackage{algorithmic}[1]
+%\usepackage{algpseudocode}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\definecolor{gray}{gray}{0.5}
+\definecolor{light-gray}{gray}{1}
+\definecolor{orange}{rgb}{1,0.5,0}
+
+\lstset{frame=tb,
+  language=JAVA,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3,
+  numbers=left,
+  xleftmargin=2em,
+  frame=single,
+  framexleftmargin=2em,
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\small\color{gray} % the style that is used for the line-numbers
+ }
+ 
+ \lstdefinestyle{customc}{
+  backgroundcolor=\color{light-gray},
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  numbers=left,
+  xleftmargin=\parindent,
+  language=C++,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{blue},
+  commentstyle=\itshape\color{gray},
+  identifierstyle=\color{black},
+  stringstyle=\color{orange},
+}
+
+\begin{document}
+
+
+\thispagestyle{empty}
+\materia{Sistemas Operativos}
+\submateria{Segundo Cuatrimestre de 2015}
+\titulo{Trabajo Práctico 2: Pthreads}
+\subtitulo{SOScrabel}
+\integrante{}{}{} % por cada integrante (apellido, nombre) (n° libreta) (e-mail)
+\integrante{}{}{}
+\integrante{}{}{}
+
+\maketitle
+\newpage
+
+\thispagestyle{empty}
+\vfill
+
+\thispagestyle{empty}
+\vspace{1.5cm}
+\tableofcontents
+\newpage
+
+%\normalsize
+
+\newpage
+\section{Introducción}
+\setcounter{page}{1}
+\input{introduccion}
+%\newpage
+
+%\newpage
+\section{Read-Write locks}
+\input{rwlock}
+
+\newpage
+\section{Scrabble}
+\input{Scrabble}
+
+%\input{apendice}
+
+
+
+%\vspace*{0.5cm}
+
+%\begin{lstlisting}
+%int main(){
+%  return 0;
+%}
+%\end{lstlisting}
+
+
+%\vspace*{0.5cm}
+
+%\newpage
+%\subsection{Código del Problema 3}
+
+%\begin{lstlisting}
+%int main(){
+%  return 0;
+%}
+%\end{lstlisting}
+
+%\vspace*{0.5cm}
+
+%\begin{lstlisting}
+%int main(){
+%  return 0;
+%}
+%\end{lstlisting}
+
+
+
+
+\end{document}
