@@ -344,17 +344,25 @@ void quitar_letras(list<Casillero>& palabra_actual) {
 
 bool es_ficha_valida_en_palabra(const Casillero& ficha, const list<Casillero>& palabra_actual) {
     // si está fuera del tablero, no es válida
+    tablero_palabras_rwlocks[ficha.fila][ficha.columna].rlock();
+
+   for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
+        tablero_letras_rwlocks[casillero->fila][casillero->columna].wlock();
+    }
+
     if (ficha.fila < 0 || ficha.fila > alto - 1 || ficha.columna < 0 || ficha.columna > ancho - 1) {
         return false;
     }
 
+
     // si el casillero está ocupado, tampoco es válida
-    tablero_letras_rwlocks[ficha.fila][ficha.columna].rlock();
     if (tablero_letras[ficha.fila][ficha.columna] != VACIO) {
-        tablero_letras_rwlocks[ficha.fila][ficha.columna].runlock();
+        tablero_palabras_rwlocks[ficha.fila][ficha.columna].runlock();
+        for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
+            tablero_letras_rwlocks[casillero->fila][casillero->columna].wunlock();
+        }
         return false;
     }
-    tablero_letras_rwlocks[ficha.fila][ficha.columna].runlock();
 
     if (palabra_actual.size() > 0) {
         // no es la primera letra de la palabra, ya hay fichas colocadas para esta palabra
@@ -367,6 +375,11 @@ bool es_ficha_valida_en_palabra(const Casillero& ficha, const list<Casillero>& p
             for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
                 if (ficha.fila - casillero->fila != 0) {
                     // no están alineadas horizontalmente
+                tablero_palabras_rwlocks[ficha.fila][ficha.columna].runlock();
+                for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
+                    tablero_letras_rwlocks[casillero->fila][casillero->columna].wunlock();
+                }
+
                     return false;
                 }
             }
@@ -374,12 +387,13 @@ bool es_ficha_valida_en_palabra(const Casillero& ficha, const list<Casillero>& p
             int paso = distancia_horizontal / abs(distancia_horizontal);
             for (unsigned int columna = mas_distante.columna; columna != ficha.columna; columna += paso) {
                 // el casillero DEBE estar ocupado en el tablero de palabras
-                tablero_palabras_rwlocks[ficha.fila][columna].rlock();
                 if (!(puso_letra_en(ficha.fila, columna, palabra_actual)) && tablero_palabras[ficha.fila][columna] == VACIO) {
-                    tablero_palabras_rwlocks[ficha.fila][columna].runlock();
+                    tablero_palabras_rwlocks[ficha.fila][ficha.columna].runlock();
+                    for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
+                        tablero_letras_rwlocks[casillero->fila][casillero->columna].wunlock();
+                    }
                     return false;
                 }
-                tablero_palabras_rwlocks[ficha.fila][columna].runlock();
             }
 
         } else if (distancia_horizontal == 0) {
@@ -387,6 +401,10 @@ bool es_ficha_valida_en_palabra(const Casillero& ficha, const list<Casillero>& p
             for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
                 if (ficha.columna - casillero->columna != 0) {
                     // no están alineadas verticalmente
+                    tablero_palabras_rwlocks[ficha.fila][ficha.columna].runlock();
+                    for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
+                        tablero_letras_rwlocks[casillero->fila][casillero->columna].wunlock();
+                    }
                     return false;
                 }
             }
@@ -394,12 +412,13 @@ bool es_ficha_valida_en_palabra(const Casillero& ficha, const list<Casillero>& p
             int paso = distancia_vertical / abs(distancia_vertical);
             for (unsigned int fila = mas_distante.fila; fila != ficha.fila; fila += paso) {
                 // el casillero DEBE estar ocupado en el tablero de palabras
-                tablero_palabras_rwlocks[fila][ficha.columna].rlock();
                 if (!(puso_letra_en(fila, ficha.columna, palabra_actual)) && tablero_palabras[fila][ficha.columna] == VACIO) {
-                    tablero_palabras_rwlocks[fila][ficha.columna].runlock();
+                    tablero_palabras_rwlocks[ficha.fila][ficha.columna].runlock();
+                    for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
+                        tablero_letras_rwlocks[casillero->fila][casillero->columna].wunlock();
+                    }
                     return false;
                 }
-                tablero_palabras_rwlocks[fila][ficha.columna].runlock();
             }
         }
         else {
