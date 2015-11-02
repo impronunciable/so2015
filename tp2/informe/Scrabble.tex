@@ -65,4 +65,27 @@ int enviar_tablero(int socket_fd) {
 }
 \end{lstlisting}
 
-Para la función $ es\_ficha\_valida\_en\_palabra $, al principio de la misma tomamos el lock de la palabra almacenada hasta el momento, y de la nueva ficha, para ambos el lock de lectura. Nos fijamos si es válida, y antes de retornar, liberamos el los lock tomados.
+Para la función $ es\_ficha\_valida\_en\_palabra $, al principio de la misma tomamos el lock de la palabra almacenada hasta el momento, y de la nueva ficha, para ambos el lock de lectura. Nos fijamos si es válida, y antes de retornar, liberamos el los lock tomados. En el siguiente fragmento encontramos el pseudocódigo utilizado para tomar el lock:
+
+\begin{lstlisting}
+
+tablero_palabras_rwlocks[ficha.fila][ficha.columna].rlock();
+
+   for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
+        tablero_letras_rwlocks[casillero->fila][casillero->columna].rlock();
+    }
+
+\end{lstlisting}
+
+
+y para liberarlo:
+
+\begin{lstlisting}
+
+tablero_palabras_rwlocks[ficha.fila][ficha.columna].runlock();
+        for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
+            tablero_letras_rwlocks[casillero->fila][casillero->columna].runlock();
+        }
+        return false;
+   \end{lstlisting}
+
