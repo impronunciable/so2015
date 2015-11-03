@@ -1,1 +1,33 @@
-nn
+Si bien no es posible probar empíricamente que la implementación está libre de deadlocks o inanición, debido a la naturaleza no-deterministica de la ejecución de los threads, por lo general los tests nos dan una buena idea de si esto pasa. Más aún, si la cantidad de ejecuciones de los test es grande, es muy probable que de haber estos problemas, se hagan visibles al momento de prueba. 
+
+Para simplificar nuestro trabajo, implementamos una función $testGenerico$ que crea una cantidad de threads de lectura y otros de escritura (especificados ambos como parámetros), que acceden al mismo recurso (un entero inicializado en 42, llamado $recurso1$). A modo de ejemplo, $testGenerico(5, 3)$ crearía 5 threads que intentan leer de $recurso1$ y 3 que intentan escribirlo (aumentar en 1 al entero). 
+
+Cada thread realizará su acción determinada unas 5 veces. Esto es, habrá 5 iteraciones de lectura o escritura. Con el objeto de testear, imprimen por pantalla la acción que están realizando, como también su momento de creación y terminación. Sin embargo, otro thread podría imprimir a la vez, quedando ambos mensajes entrecortados.
+
+Además, para que no sea un factor decisivo en nuestros tests, la función toma un parámetro para indicar si es que los threads de lectura se crean primero (default), o bien los de escritura lo hacen (indicado con un 1). 
+
+Así, pudimos realizar los siguientes tests: 
+
+\begin{lstlisting}
+// Varias lecturas
+testGenerico(5, 0);
+// Varias escrituras
+testGenerico(0, 5);
+// Igual cantidad de lecturas que escrituras;
+testGenerico(5, 5);
+testGenerico(5, 5, 1); // el 1 indica "primero escritores"
+// Muchas escrituras
+testGenerico(1, 10);
+testGenerico(1, 10, 1);
+// Muchas lecturas
+testGenerico(10, 1);
+testGenerico(10, 1, 1);
+
+// Algunas lecturas, algunas escrituras
+testGenerico(7, 3);
+testGenerico(7, 3, 1);
+testGenerico(3, 7);
+testGenerico(3, 7, 1);
+\end{lstlisting}
+
+Corrimos varias veces estos tests, y no hubo deadlocks, es decir, se completó efectivamente la ejecución de los mismos. En cuanto a la inanición, el proceso es un tanto más tedioso, porque hay que analizar la salida de cada ejecución, para comprobar que los threads que hayan sido creados en cada test tengan tiempo y no queden relegados al final de la ejecución. Realizamos tal proceso, y no pareciera haber inanición.
