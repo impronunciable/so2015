@@ -1,33 +1,33 @@
 La implementación del servidor backend es análoga a la utilizada en su versión monousuario, con la diferencia que se utiliza un thread distinto para cada jugador, y se utiliza la clase $RWLock$ para sincronizar las lecturas y escrituras en el tablero. Utilizamos el llamado a ''pthread$\_$create(thread, NULL, atendedor$\_$de$\_$jugador, (void*) socketfd$\_$cliente)'', para obtener un nuevo thread correspondiente a un cliente. La función $atendedor\_de\_jugador$, es similar a la correspondiente en su versión monojugador, pero con las consideraciones necesarias para la sincronización en el tablero. En este sentido utilizamos un $RWLock$ global por cada posición del tablero, específicamente tenemos un $ vector<vector<RWLock> > tablero\_letras\_rwlocks$ y un $vector<vector<RWLock> > tablero\_palabras\_rwlocks $. Cada vez que escribimos en alguna posición bloque utilizamos el $RWLock$ correspondiente, y llamamos a $ wlock() $, y $ wunlock() $, y cada vez que leemos alguna posición, utilizamos nuevamente el $RWLock$ correspondiente, pero llamando a $ rlock() $ y $ runlock() $.
 
-Sin embargo, bajo ciertos escenarios hay que tomar el lock de lectura o de escritura de varias posiciones antes de efectuar la operación, ya que la misma involucra muchas posiciones en conjunto. Cuando el comando recibido por el backend es $MSG_PALABRA$, se debe almacenar en el casillero la palabra completa. En el siguiente fragmento encontramos el pseudicódigo utilizado para almacenar a la misma. 
+Sin embargo, bajo ciertos escenarios hay que tomar el lock de lectura o de escritura de varias posiciones antes de efectuar la operación, ya que la misma involucra muchas posiciones en conjunto. Cuando el comando recibido por el backend es $MSG\_PALABRA$, se debe almacenar en el casillero la palabra completa. En el siguiente fragmento encontramos el pseudicódigo utilizado para almacenar a la misma. 
 
- 
+\lstset{language=[Sharp]C}
 \begin{lstlisting}
-for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
-                tablero_palabras_rwlocks[casillero->fila][casillero->columna].wlock();
-            }
-            // las letras acumuladas conforman una palabra completa, escribirlas en el tablero de palabras y borrar las letras temporales
-            for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
-                tablero_palabras[casillero->fila][casillero->columna] = casillero->letra;
-            }
-             for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
-                tablero_palabras_rwlocks[casillero->fila][casillero->columna].wunlock();
-            }
+foreach (casillero in palabra_actual) {
+    tablero_palabras_rwlocks[casillero->fila][casillero->columna].wlock();
+}
+// las letras acumuladas conforman una palabra completa, escribirlas en el tablero de palabras y borrar las letras temporales
+foreach (casillero in palabra_actual) {
+    tablero_palabras[casillero->fila][casillero->columna] = casillero->letra;
+}
+foreach (casillero in palabra_actual) {
+    tablero_palabras_rwlocks[casillero->fila][casillero->columna].wunlock();
+}
 \end{lstlisting}
 
 En caso de que se asigne erróneamente por parte del usuario una letra, toda la palabra actualmente almacenada debe limpiarse, para eso se llama a la función $ quitar\_letras $, la cual primero toma el lock de todas las letras actualmente almacenadas, y luego las setea en $VACIO$ para finalmente libera el lock de todas ellas.
 En el siguiente fragmento encontramos el pseudocódigo de la misma.
 
 \begin{lstlisting}
-void quitar_letras(list<Casillero>& palabra_actual) {
-    for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
+quitar_letras(list<Casillero>& palabra_actual) {
+    foreach (casillero in palabra_actual) {
         tablero_letras_rwlocks[casillero->fila][casillero->columna].wlock();
     }
-    for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
+    foreach (casillero in palabra_actual) {
         tablero_letras[casillero->fila][casillero->columna] = VACIO;
     }
-    for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
+    foreach (casillero in palabra_actual) {
         tablero_letras_rwlocks[casillero->fila][casillero->columna].wunlock();
     }
     palabra_actual.clear();
@@ -42,21 +42,21 @@ int enviar_tablero(int socket_fd) {
     sprintf(buf, "STATUS ");
     int pos = 7;
     //tomamos el rlock de todas las posiciones para que no se pueda escribir
-    for (unsigned int fila = 0; fila < alto; ++fila) {
-        for (unsigned int col = 0; col < ancho; ++col) {
+    for (fila = 0; fila < alto; ++fila) {
+        for (col = 0; col < ancho; ++col) {
             tablero_palabras_rwlocks[fila][col].rlock();
         }
     }
-    for (unsigned int fila = 0; fila < alto; ++fila) {
-        for (unsigned int col = 0; col < ancho; ++col) {
+    for (fila = 0; fila < alto; ++fila) {
+        for (col = 0; col < ancho; ++col) {
             char letra = tablero_palabras[fila][col];
-            buf[pos] = (letra == VACIO)? '-' : letra;
+            buf[pos] = (letra == VACIO) ? '-' : letra;
             pos++;
         }
     }
     buf[pos] = 0; //end of buffer
-    for (unsigned int fila = 0; fila < alto; ++fila) {
-        for (unsigned int col = 0; col < ancho; ++col) {
+    for (fila = 0; fila < alto; ++fila) {
+        for (col = 0; col < ancho; ++col) {
             tablero_palabras_rwlocks[fila][col].runlock();
         }
     }
@@ -68,24 +68,21 @@ int enviar_tablero(int socket_fd) {
 Para la función $ es\_ficha\_valida\_en\_palabra $, al principio de la misma tomamos el lock de la palabra almacenada hasta el momento, y de la nueva ficha, para ambos el lock de lectura. Nos fijamos si es válida, y antes de retornar, liberamos el los lock tomados. En el siguiente fragmento encontramos el pseudocódigo utilizado para tomar el lock:
 
 \begin{lstlisting}
-
 tablero_palabras_rwlocks[ficha.fila][ficha.columna].rlock();
 
-   for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
-        tablero_letras_rwlocks[casillero->fila][casillero->columna].rlock();
-    }
-
+foreach (casillero in palabra_actual) {
+    tablero_letras_rwlocks[casillero->fila][casillero->columna].rlock();
+}
 \end{lstlisting}
 
 
 y para liberarlo:
 
 \begin{lstlisting}
-
 tablero_palabras_rwlocks[ficha.fila][ficha.columna].runlock();
-        for (list<Casillero>::const_iterator casillero = palabra_actual.begin(); casillero != palabra_actual.end(); casillero++) {
-            tablero_letras_rwlocks[casillero->fila][casillero->columna].runlock();
-        }
-        return false;
-   \end{lstlisting}
 
+foreach (casillero in palabra_actual) {
+    tablero_letras_rwlocks[casillero->fila][casillero->columna].runlock();
+}
+return false;
+\end{lstlisting}
