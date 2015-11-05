@@ -8,6 +8,7 @@
 
 #define TAG_REQUEST 60
 #define TAG_REPLY 70
+#define TAG_SE_VA_UNO 80
 
 void servidor(int mi_cliente);
 
