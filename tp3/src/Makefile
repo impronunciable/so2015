@@ -1,6 +1,6 @@
 MPICC   = mpicc
 MPIEXEC = mpiexec
-CFLAGS += -Wall
+CFLAGS += -Wall -std=c99
 
 EJECUTABLE = tp3
 
