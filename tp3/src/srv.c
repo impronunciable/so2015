@@ -105,7 +105,7 @@ void servidor(int mi_cliente)
             // Se muere el origen
             vivo[origen/2] = false;
             cant_vivos--;
-            if (respondio[origen/2]){
+            if (respondio[origen/2] || !hay_pedido_local){
                 break;
             }
             // si no respondió, continúo como si fuera TAG_REPLY
