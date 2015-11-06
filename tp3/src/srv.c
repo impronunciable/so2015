@@ -14,14 +14,16 @@ void servidor(int mi_cliente)
     int N = cant_ranks/2;
     int seq_num;
     int highest_seq_num = 0;
-    int reply_count = N-1;
 
     bool vivo[N];
     int cant_vivos = N;
     bool reply_deferred[N]; // NO ADMITE INGRESO DE NODOS
+    //int expected_replies;
+    bool respondio[N];
     for (int i = 0; i < N; ++i){
         reply_deferred[i] = false;
         vivo[i] = true;
+        respondio[i] = false;
     }
 
     while( ! listo_para_salir ) {
@@ -36,10 +38,12 @@ void servidor(int mi_cliente)
             assert(origen == mi_cliente);
             debug("Mi cliente solicita acceso exclusivo");
 
-            reply_count = cant_vivos - 1;
-
             assert(hay_pedido_local == false); //meh
             hay_pedido_local = true;
+
+            for (int i = 0; i < N; ++i){
+                respondio[i] = false;
+            }
 
             seq_num = highest_seq_num + 1;
             // Envío a todos un REQUEST
@@ -49,11 +53,11 @@ void servidor(int mi_cliente)
                 }
             }
 
-            if (reply_count == 0){
+            // Soy el último
+            if (cant_vivos == 1){
                 debug("Dándole permiso");
                 MPI_Send(NULL, 0, MPI_INT, mi_cliente, TAG_OTORGADO, COMM_WORLD);
             }
-
             break;
         }
 
@@ -88,7 +92,7 @@ void servidor(int mi_cliente)
         case TAG_TERMINE:{
             assert(origen == mi_cliente);
             debug("Mi cliente avisa que terminó");
-            //TODO: Arreglar esto. Es decir, indicar que ya no estoy
+            // Mando mensajes a todos, indicando que me fui
             for (int i = 0; i < N; ++i){
                 if (vivo[i] && i != mi_nro){
                     MPI_Send(NULL, 0, MPI_INT, i*2, TAG_SE_VA_UNO, COMM_WORLD);
@@ -99,14 +103,27 @@ void servidor(int mi_cliente)
         }
         case TAG_SE_VA_UNO:{
             // Se muere el origen
-            vivo[origen] = false;
+            vivo[origen/2] = false;
             cant_vivos--;
-            break;
+            if (respondio[origen/2]){
+                break;
+            }
+            // si no respondió, continúo como si fuera TAG_REPLY
+            // o sea, se ejecuta lo que está acá abajo.
+            // Notar falta de break
         }
         case TAG_REPLY:{
-            reply_count--;
-            // Si todos me dicen que sí
-            if (reply_count == 0){
+            respondio[origen/2] = true;
+
+            int i;
+            for(i = 0; i < N; ++i){
+                if (vivo[i] && i != mi_nro && !respondio[i]){
+                    break;
+                }
+            }
+
+            // todos responden
+            if (i == N){
                 debug("Dándole permiso");
                 MPI_Send(NULL, 0, MPI_INT, mi_cliente, TAG_OTORGADO, COMM_WORLD);
             }
@@ -117,8 +134,5 @@ void servidor(int mi_cliente)
         break;
 
         }
-
-
     }
-
 }
