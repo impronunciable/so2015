@@ -18,8 +18,10 @@ void servidor(int mi_cliente)
     bool vivo[N];
     int cant_vivos = N;
     bool reply_deferred[N]; // NO ADMITE INGRESO DE NODOS
-    //int expected_replies;
+
+    int expected_replies = N-1;
     bool respondio[N];
+
     for (int i = 0; i < N; ++i){
         reply_deferred[i] = false;
         vivo[i] = true;
@@ -44,6 +46,8 @@ void servidor(int mi_cliente)
             for (int i = 0; i < N; ++i){
                 respondio[i] = false;
             }
+
+            expected_replies = cant_vivos-1;
 
             seq_num = highest_seq_num + 1;
             // Envío a todos un REQUEST
@@ -114,16 +118,10 @@ void servidor(int mi_cliente)
         }
         case TAG_REPLY:{
             respondio[origen/2] = true;
-
-            int i;
-            for(i = 0; i < N; ++i){
-                if (vivo[i] && i != mi_nro && !respondio[i]){
-                    break;
-                }
-            }
+            expected_replies--;
 
             // todos responden
-            if (i == N){
+            if (expected_replies == 0){
                 debug("Dándole permiso");
                 MPI_Send(NULL, 0, MPI_INT, mi_cliente, TAG_OTORGADO, COMM_WORLD);
             }
