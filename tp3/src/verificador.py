@@ -1,6 +1,5 @@
-import sys, os, glob
 # -*- coding: utf-8 -*-
-import codecs
+import sys, os, glob
 
 def leer_archivo(filename):
     print "Probando: " + filename
